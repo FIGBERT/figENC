@@ -1,14 +1,26 @@
 from initiate_key import rsa_key
 from encrypt import rsa_enc
 from decrypt import rsa_dec
+import tkinter as tk
 
-exec_action = input("Are you encrypting or decrypting today (enc/dec)? ")
-if exec_action == "enc":
-    key_gen = input("Are you generating fresh keys (y/n)? ")
-    if key_gen == "y":
-        rsa_key()
-        rsa_enc()
-    elif key_gen == "n":
-        rsa_enc()
-elif exec_action == "dec":
-    rsa_dec()
+root = tk.Tk()
+root.wm_title("figENC")
+canvas = tk.Canvas(root, height=700, width=500)
+canvas.pack()
+frame = tk.Frame(root, bg='white')
+frame.place(relwidth=1, relheight=1)
+header = tk.Label(frame, text="figENC\nIndustry leading encryption by FIGBERT", bg="gray", fg="black", justify="center", font=("Arial", "18"))
+header.pack(fill="x", side="top", ipady="5")
+action = tk.Frame(frame, bg="white")
+action.pack(fill='both')
+action_label = tk.Label(action, text="Action:", bg="white", justify='left', font=("Arial", "14"))
+action_label.pack()
+action_list = tk.Listbox(action, bg="white", selectmode="single", font=("Arial", "12"), height=3, bd=1)
+action_list.insert(1, "Encrypt with fresh keys")
+action_list.insert(2, "Encrypt with generated key")
+action_list.insert(3, "Decrypt with generated key")
+action_list.pack(fill='both')
+submit_action = tk.Button(action, text="Begin Process", font=("Arial", "12"))
+submit_action.pack()
+
+root.mainloop()
