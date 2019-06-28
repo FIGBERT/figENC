@@ -5,29 +5,39 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.fernet import Fernet
 
+# symmetric_enc() generates a single symmetric key
 def symmetric_enc():
+    # Generating the symmetric key
     symmetric_key = Fernet.generate_key()
+    # Saving the symmetric key to the file symmetric_key.key
     with open('symmetric_key.key', 'wb') as symmetric_file:
         symmetric_file.write(symmetric_key)
 
 def rsa_enc():
+    # Generating the symmetric key for use encrypting the file
     symmetric_key = Fernet.generate_key()
+    # Generating the private key object for use encrypting the symmetric key
     private_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=4096,
         backend=default_backend()
     )
+    # Generating the public key object for use decrypting the symmetric key
     public_key = private_key.public_key()
-    private_key_passcode = input("Private Key Password: ")
+    # Collecting user input to add a password to the private key for additional security
+    private_key_passcode = input("Private Key Password (CRITICAL: DO NOT FORGET. DATA WILL BE LOST): ")
+    # Turning the private key object to readable text for export
     private_key_text = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.BestAvailableEncryption(bytes(private_key_passcode, 'utf-8'))
     )
+    # Turning the public key object to readable text for export
     public_key_text = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
+    # Writing the keys to their respective files
     with open('private_key.pem', 'wb') as private_file:
         private_file.write(private_key_text)
     with open('public_key.pem', 'wb') as public_file:
