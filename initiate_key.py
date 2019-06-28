@@ -5,14 +5,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.fernet import Fernet
 
-# symmetric_key() generates a single symmetric key
-def symmetric_key():
-    # Generating the symmetric key
-    symmetric_key = Fernet.generate_key()
-    # Saving the symmetric key to the file symmetric_key.key
-    with open('symmetric_key.key', 'wb') as symmetric_file:
-        symmetric_file.write(symmetric_key)
-
 #rsa_key() generates a symmetric key as well as a public and private key
 def rsa_key():
     # Generating the symmetric key for use encrypting the file

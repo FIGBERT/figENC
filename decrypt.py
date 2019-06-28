@@ -5,17 +5,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.fernet import Fernet
 
-def symmetric_dec():
-    with open('symmetric_key.key', 'rb') as symmetric_key_file:
-        symmetric_key_data = symmetric_key_file.read()
-        symmetric_key = Fernet(symmetric_key_data)
-    file_to_decrypt = input("File to decrypt: ")
-    with open(file_to_decrypt, 'rb') as read_file:
-        encrypted_data = read_file.read()
-    original_message = symmetric_key.decrypt(encrypted_data)
-    with open(file_to_decrypt, 'wb') as write_file:
-        write_file.write(original_message)
-
 def rsa_dec():
     passcode = input("Private Key passcode: ")
     with open('private_key.pem', 'rb') as private_key_file:

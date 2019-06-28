@@ -5,18 +5,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.fernet import Fernet
 
-def symmetric_enc():
-    with open('symmetric_key.key', 'rb') as symmetric_key_file:
-        symmetric_key_data = symmetric_key_file.read()
-        symmetric_key = Fernet(symmetric_key_data)
-    file_to_encrypt = input("File to encrypt: ")
-    with open(file_to_encrypt) as read_file:
-        file_data = read_file.read()
-    data = symmetric_key.encrypt(bytes(file_data, 'utf-8'))
-    with open(file_to_encrypt, 'wb') as write_file:
-        write_file.write(data)
-    print("Encryption successful. Proceed into cyberspace with confidence.\n")
-
 def rsa_enc():
     with open('public_key.pem', 'rb') as public_key_file:
         public_key = serialization.load_pem_public_key(
