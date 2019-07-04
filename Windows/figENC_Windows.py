@@ -175,7 +175,7 @@ file_input = tk.Entry(file_frame, font=("Arial", "12"), justify=tk.CENTER, textv
 passcode_frame = tk.Frame(step_two, bg="#1A181C", pady="8")
 passcode_label = tk.Label(passcode_frame, text="If you see this, the app broke", font=("Arial", "14"), bg="#1A181C", fg="#ACA0B2")
 passcode_instructions = tk.Label(passcode_frame, text="If you see this, the app broke", font=("Arial", "11"), bg="#1A181C", fg="#B494C7")
-passcode_input = tk.Entry(passcode_frame, font=("Arial", "12"), justify=tk.CENTER, textvariable=tk.StringVar, relief=tk.SUNKEN, bg="#1A181C", fg="#ACA0B2")
+passcode_input = tk.Entry(passcode_frame, font=("Arial", "12"), justify=tk.CENTER, textvariable=tk.StringVar, relief=tk.SUNKEN, bg="#1A181C", fg="#ACA0B2", show="*")
 
 save = tk.Frame(step_two, bg="#1A181C", pady="8")
 save_label = tk.Label(save, text="Save location for keys", font=("Arial", "14"), bg="#1A181C", fg="#ACA0B2")
