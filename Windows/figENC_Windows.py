@@ -1,6 +1,8 @@
 from initiate_key import rsa_key
+from initiate_key import weak_key
 from encrypt import rsa_enc
 from decrypt import rsa_dec
+from decrypt import weak_dec
 import tkinter as tk
 
 crypto_mode = ""
@@ -35,6 +37,7 @@ def setup(mode):
         save.pack(fill="both")
         save_label.config(text="Save location for keys")
         save_label.pack()
+        save_instructions.config(text="Save the keys to an empty folder, and store them somewhere secure\nIf other key files exist in the same folder, they will be overwritten")
         save_instructions.pack()
         save_input.pack(fill="both")
         submit.config(text="Encrypt file/s")
@@ -60,14 +63,43 @@ def setup(mode):
         file_instructions.pack()
         file_input.pack(fill='x')
         save.pack(fill="both")
+        save_label.config(text="Save location for keys")
+        save_label.pack()
+        save_instructions.config(text="Save the keys to an empty folder, and store them somewhere secure\nIf other key files exist in the same folder, they will be overwritten")
+        save_instructions.pack()
+        save_input.pack(fill="both")
+        submit.config(text="Encrypt file/s")
+        submit.pack(pady="10")
+        crypto_mode = "weak_key_enc"
+    elif mode == 2:
+        file_frame.pack_forget()
+        file_label.pack_forget()
+        file_instructions.pack_forget()
+        file_input.pack_forget()
+        passcode_frame.pack_forget()
+        passcode_label.pack_forget()
+        passcode_instructions.pack_forget()
+        passcode_input.pack_forget()
+        save.pack_forget()
+        save_label.pack_forget()
+        save_instructions.pack_forget()
+        save_input.pack_forget()
+        submit.pack_forget()
+        file_frame.pack(fill="both")
+        file_label.config(text="Filepath/s to the file/s to encrypt")
+        file_label.pack()
+        file_instructions.pack()
+        file_input.pack(fill='x')
+        save.pack(fill="both")
         save_label.config(text="Key location")
         save_label.pack()
+        save_instructions.config(text="Filepath to matching key trio")
         save_instructions.pack()
         save_input.pack(fill="both")
         submit.config(text="Encrypt file/s")
         submit.pack(pady="10")
         crypto_mode = "enc"
-    elif mode == 2:
+    elif mode == 3:
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
@@ -95,12 +127,41 @@ def setup(mode):
         save.pack(fill="both")
         save_label.config(text="Key location")
         save_label.pack()
+        save_instructions.config(text="Filepath to matching key trio")
         save_instructions.pack()
         save_input.pack(fill="both")
         submit.config(text="Decrypt file/s")
         submit.pack(pady="10")
         crypto_mode = "dec"
-    elif mode == 3:
+    elif mode == 4:
+        file_frame.pack_forget()
+        file_label.pack_forget()
+        file_instructions.pack_forget()
+        file_input.pack_forget()
+        passcode_frame.pack_forget()
+        passcode_label.pack_forget()
+        passcode_instructions.pack_forget()
+        passcode_input.pack_forget()
+        save.pack_forget()
+        save_label.pack_forget()
+        save_instructions.pack_forget()
+        save_input.pack_forget()
+        submit.pack_forget()
+        file_frame.pack(fill="both")
+        file_label.config(text="Filepath/s to the file/s to decrypt")
+        file_label.pack()
+        file_instructions.pack()
+        file_input.pack(fill='x')
+        save.pack(fill="both")
+        save_label.config(text="Key location")
+        save_label.pack()
+        save_instructions.config(text="Filepath to matching key trio")
+        save_instructions.pack()
+        save_input.pack(fill="both")
+        submit.config(text="Decrypt file/s")
+        submit.pack(pady="10")
+        crypto_mode = "weak_dec"
+    elif mode == 5:
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
@@ -123,22 +184,53 @@ def setup(mode):
         save.pack(fill="both")
         save_label.config(text="Save location for keys")
         save_label.pack()
+        save_instructions.config(text="Save the keys to an empty folder, and store them somewhere secure\nIf other key files exist in the same folder, they will be overwritten")
         save_instructions.pack()
         save_input.pack(fill="both")
         submit.config(text="Create keys")
         submit.pack(pady="10")
         crypto_mode = "just_key"
+    elif mode == 6:
+        file_frame.pack_forget()
+        file_label.pack_forget()
+        file_instructions.pack_forget()
+        file_input.pack_forget()
+        passcode_frame.pack_forget()
+        passcode_label.pack_forget()
+        passcode_instructions.pack_forget()
+        passcode_input.pack_forget()
+        save.pack_forget()
+        save_label.pack_forget()
+        save_instructions.pack_forget()
+        save_input.pack_forget()
+        submit.pack_forget()
+        save.pack(fill="both")
+        save_label.config(text="Save location for keys")
+        save_label.pack()
+        save_instructions.config(text="Save the keys to an empty folder, and store them somewhere secure\nIf other key files exist in the same folder, they will be overwritten")
+        save_instructions.pack()
+        save_input.pack(fill="both")
+        submit.config(text="Create keys")
+        submit.pack(pady="10")
+        crypto_mode = "weak_key"
 
 def go(mode, save_folder, target_file, passkey=None):
     if mode == "key_enc":
         rsa_key(passkey, save_folder)
         rsa_enc(target_file, save_folder)
+    elif mode == "weak_key_enc":
+        weak_key(save_folder)
+        rsa_enc(target_file, save_folder)
     elif mode == "enc":
         rsa_enc(target_file, save_folder)
     elif mode == "dec":
         rsa_dec(target_file, save_folder, passkey)
+    elif mode == "weak_dec":
+        weak_dec(target_file, save_folder)
     elif mode == "just_key":
         rsa_key(passkey, save_folder)
+    elif mode == "weak_key":
+        weak_key(save_folder)
 
 root = tk.Tk()
 root.wm_title("figENC")
@@ -156,16 +248,19 @@ action = tk.Frame(frame, bg="#1A181C", pady="5")
 action.pack(fill='both')
 action_label = tk.Label(action, text="Action:", justify='left', font=("Arial", "14"), bg="#1A181C", fg="#ACA0B2")
 action_label.pack()
-action_list = tk.Listbox(action, selectmode="single", font=("Arial", "12"), height=4, bd=1, relief=tk.SUNKEN, bg="#1A181C", fg="#B494C7", selectbackground="#643181")
-action_list.insert(1, "Encrypt with fresh keys")
-action_list.insert(2, "Encrypt with generated keys")
-action_list.insert(3, "Decrypt with generated keys")
-action_list.insert(4, "Only create fresh keys")
+action_list = tk.Listbox(action, selectmode="single", font=("Arial", "12"), height=7, bd=1, relief=tk.SUNKEN, bg="#1A181C", fg="#B494C7", selectbackground="#643181")
+action_list.insert(1, "Encrypt with fresh keys (password locked)")
+action_list.insert(2, "Encrypt with fresh keys (no password)")
+action_list.insert(3, "Encrypt with generated keys")
+action_list.insert(4, "Decrypt with generated keys (password locked)")
+action_list.insert(5, "Decrypt with generated keys (no password)")
+action_list.insert(6, "Only create fresh keys (password locked)")
+action_list.insert(7, "Only create fresh keys (no password)")
 action_list.pack(fill='both', pady="10")
 submit_action = tk.Button(action, text="Begin Process", font=("Arial", "12"), command=lambda: setup(action_list.curselection()), bg="#643181", fg="#B494C7")
 submit_action.pack()
 
-step_two =tk.Frame(frame, bg="#1A181C")
+step_two = tk.Frame(frame, bg="#1A181C")
 step_two.pack(fill="both")
 
 file_frame = tk.Frame(step_two, bg="#1A181C", pady="8")
