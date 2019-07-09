@@ -4,8 +4,6 @@ from encrypt import rsa_enc
 from decrypt import rsa_dec
 from decrypt import weak_dec
 import tkinter as tk
-from os import makedirs
-from os import path as Path
 
 crypto_mode = ""
 def setup(mode):
