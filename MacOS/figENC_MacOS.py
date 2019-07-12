@@ -1,27 +1,36 @@
 import tkinter as tk
 from initiate_key import rsa_key
-from initiate_key import weak_key
 from encrypt import rsa_enc
 from decrypt import rsa_dec
 from decrypt import weak_dec
 
 crypto_mode = ""
+
+
 def setup(mode):
-    """"Change the GUI to match the app mode."""
+    """"Change the GUI to match the app mode,
+    based on the user's action_list selection.
+
+    Keyword arguments:
+    mode -- an int (0-6) corresponding with the action_list selection
+    """
     mode = mode[0]
     global crypto_mode
     if mode == 0:
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
+        reset_text(file_input)
         file_input.pack_forget()
         passcode_frame.pack_forget()
         passcode_label.pack_forget()
         passcode_instructions.pack_forget()
+        reset_text(passcode_input)
         passcode_input.pack_forget()
         save.pack_forget()
         save_label.pack_forget()
         save_instructions.pack_forget()
+        reset_text(save_input)
         save_input.pack_forget()
         submit.pack_forget()
         file_frame.pack(fill = "both")
@@ -61,14 +70,17 @@ def setup(mode):
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
+        reset_text(file_input)
         file_input.pack_forget()
         passcode_frame.pack_forget()
         passcode_label.pack_forget()
         passcode_instructions.pack_forget()
+        reset_text(passcode_input)
         passcode_input.pack_forget()
         save.pack_forget()
         save_label.pack_forget()
         save_instructions.pack_forget()
+        reset_text(save_input)
         save_input.pack_forget()
         submit.pack_forget()
         file_frame.pack(fill = "both")
@@ -96,14 +108,17 @@ def setup(mode):
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
+        reset_text(file_input)
         file_input.pack_forget()
         passcode_frame.pack_forget()
         passcode_label.pack_forget()
         passcode_instructions.pack_forget()
+        reset_text(passcode_input)
         passcode_input.pack_forget()
         save.pack_forget()
         save_label.pack_forget()
         save_instructions.pack_forget()
+        reset_text(save_input)
         save_input.pack_forget()
         submit.pack_forget()
         file_frame.pack(fill = "both")
@@ -124,14 +139,17 @@ def setup(mode):
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
+        reset_text(file_input)
         file_input.pack_forget()
         passcode_frame.pack_forget()
         passcode_label.pack_forget()
         passcode_instructions.pack_forget()
+        reset_text(passcode_input)
         passcode_input.pack_forget()
         save.pack_forget()
         save_label.pack_forget()
         save_instructions.pack_forget()
+        reset_text(save_input)
         save_input.pack_forget()
         submit.pack_forget()
         file_frame.pack(fill = "both")
@@ -163,14 +181,17 @@ def setup(mode):
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
+        reset_text(file_input)
         file_input.pack_forget()
         passcode_frame.pack_forget()
         passcode_label.pack_forget()
         passcode_instructions.pack_forget()
+        reset_text(passcode_input)
         passcode_input.pack_forget()
         save.pack_forget()
         save_label.pack_forget()
         save_instructions.pack_forget()
+        reset_text(save_input)
         save_input.pack_forget()
         submit.pack_forget()
         file_frame.pack(fill = "both")
@@ -191,14 +212,17 @@ def setup(mode):
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
+        reset_text(file_input)
         file_input.pack_forget()
         passcode_frame.pack_forget()
         passcode_label.pack_forget()
         passcode_instructions.pack_forget()
+        reset_text(passcode_input)
         passcode_input.pack_forget()
         save.pack_forget()
         save_label.pack_forget()
         save_instructions.pack_forget()
+        reset_text(save_input)
         save_input.pack_forget()
         submit.pack_forget()
         passcode_frame.pack(fill = "both")
@@ -232,14 +256,17 @@ def setup(mode):
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
+        reset_text(file_input)
         file_input.pack_forget()
         passcode_frame.pack_forget()
         passcode_label.pack_forget()
         passcode_instructions.pack_forget()
+        reset_text(passcode_input)
         passcode_input.pack_forget()
         save.pack_forget()
         save_label.pack_forget()
         save_instructions.pack_forget()
+        reset_text(save_input)
         save_input.pack_forget()
         submit.pack_forget()
         save.pack(fill = "both")
@@ -259,13 +286,32 @@ def setup(mode):
         submit.pack(pady = "10")
         crypto_mode = "weak_key"
 
-def go(mode, save_folder, target_file, passkey=None):
-    """Performs the user-selected action using the user input data"""
+
+def reset_text(entry_widget):
+    """Reset the string value of a tk.Entry object to an empty string
+    
+    Keyword arguments:
+    entry_widget -- a tk.Entry object
+    """
+    entry_widget.delete(0,tk.END)
+    entry_widget.insert(0,"")
+
+
+def go(mode, save_folder=None, target_file=None, passkey=None):
+    """Perform the action corresponding to the mode,
+    using the input data from the user
+
+    Keyword arguments:
+    mode -- the mode defined by setup() from action_list
+    save_folder -- the folder where the keys are or will be stored (OPTIONAL)
+    target_file -- the file to encrypt or decrypt (OPTIONAL)
+    passkey - the access code to the RSA keys that have them (OPTIONAL)
+    """
     if mode == "key_enc":
         rsa_key(passkey, save_folder)
         rsa_enc(target_file, save_folder)
     elif mode == "weak_key_enc":
-        weak_key(save_folder)
+        rsa_key(passkey, save_folder)
         rsa_enc(target_file, save_folder)
     elif mode == "enc":
         rsa_enc(target_file, save_folder)
@@ -276,7 +322,8 @@ def go(mode, save_folder, target_file, passkey=None):
     elif mode == "just_key":
         rsa_key(passkey, save_folder)
     elif mode == "weak_key":
-        weak_key(save_folder)
+        rsa_key(passkey, save_folder)
+
 
 root = tk.Tk()
 root.wm_title("figENC")
@@ -334,7 +381,7 @@ action_list.insert(4, "Decrypt with generated keys (password locked)")
 action_list.insert(5, "Decrypt with generated keys (no password)")
 action_list.insert(6, "Only create fresh keys (password locked)")
 action_list.insert(7, "Only create fresh keys (no password)")
-action_list.pack(fill="both", pady="10")
+action_list.pack(fill = "both", pady = "10")
 submit_action = tk.Button(
     action,
     text = "Begin Process",
@@ -349,7 +396,6 @@ submit_action.pack()
 
 step_two = tk.Frame(frame, bg = "#1A181C")
 step_two.pack(fill = "both")
-
 file_frame = tk.Frame(step_two, bg = "#1A181C", pady = "8")
 file_label = tk.Label(
     file_frame,
@@ -403,7 +449,6 @@ passcode_input = tk.Entry(
     insertbackground = "#ACA0B2",
     borderwidth = 0.5
     )
-
 save = tk.Frame(step_two, bg = "#1A181C", pady = "8")
 save_label = tk.Label(
     save,
@@ -439,10 +484,10 @@ submit = tk.Button(
     highlightthickness = 0,
     pady = "3",
     command = lambda: go(
-        mode=crypto_mode,
-        save_folder=save_input.get(),
-        target_file=file_input.get(),
-        passkey=passcode_input.get()
+        mode = crypto_mode,
+        save_folder = save_input.get(),
+        target_file = file_input.get(),
+        passkey = passcode_input.get()
         )
     )
 
