@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>figENC_MacOS</string>
+	<string>figENC</string>
 	<key>CFBundleExecutable</key>
-	<string>MacOS/figENC_MacOS</string>
+	<string>MacOS/figENC</string>
 	<key>CFBundleIconFile</key>
 	<string>icon-windowed.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>figENC_MacOS</string>
+	<string>figENC</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>figENC_MacOS</string>
+	<string>figENC</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
