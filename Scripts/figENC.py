@@ -1,8 +1,8 @@
+from sys import platform
 import tkinter as tk
 from initiate_key import rsa_key
 from encrypt import rsa_enc
 from decrypt import rsa_dec
-from decrypt import weak_dec
 
 crypto_mode = ""
 
@@ -16,7 +16,7 @@ def setup(mode):
     """
     mode = mode[0]
     global crypto_mode
-    if mode == 0:
+    if mode == 0: #Encrypt with fresh keys (password locked)
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
@@ -46,8 +46,8 @@ def setup(mode):
                 "CRITICAL: DO NOT FORGET YOUR"
                 "PASSCODE.\nWITHOUT IT, "
                 "YOUR DATA WILL BE LOST."
-                )
             )
+        )
         passcode_instructions.pack()
         passcode_input.pack(fill = "x")
         save.pack(fill = "both")
@@ -59,14 +59,14 @@ def setup(mode):
                 "and store them somewhere secure\n"
                 "If other key files exist in the same"
                 "folder, they will be overwritten"
-                )
             )
+        )
         save_instructions.pack()
         save_input.pack(fill = "both")
         submit.config(text = "Encrypt file/s")
         submit.pack(pady = "10")
         crypto_mode = "key_enc"
-    elif mode == 1:
+    elif mode == 1: #Encrypt with fresh keys (no password)
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
@@ -97,14 +97,14 @@ def setup(mode):
                 "and store them somewhere secure\n"
                 "If other key files exist in the same"
                 "folder, they will be overwritten"
-                )
             )
+        )
         save_instructions.pack()
         save_input.pack(fill = "both")
         submit.config(text = "Encrypt file/s")
         submit.pack(pady = "10")
         crypto_mode = "weak_key_enc"
-    elif mode == 2:
+    elif mode == 2: #Encrypt with generated keys
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
@@ -135,7 +135,7 @@ def setup(mode):
         submit.config(text = "Encrypt file/s")
         submit.pack(pady = "10")
         crypto_mode = "enc"
-    elif mode == 3:
+    elif mode == 3: #Decrypt with generated keys (password locked)
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
@@ -164,8 +164,8 @@ def setup(mode):
             text = (
                 "Passcode must be the same "
                 "passcode used when the keys were created"
-                )
             )
+        )
         passcode_instructions.pack()
         passcode_input.pack(fill = "x")
         save.pack(fill = "both")
@@ -177,7 +177,7 @@ def setup(mode):
         submit.config(text = "Decrypt file/s")
         submit.pack(pady = "10")
         crypto_mode = "dec"
-    elif mode == 4:
+    elif mode == 4: #Decrypt with generated keys (no password)
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
@@ -208,7 +208,7 @@ def setup(mode):
         submit.config(text = "Decrypt file/s")
         submit.pack(pady = "10")
         crypto_mode = "weak_dec"
-    elif mode == 5:
+    elif mode == 5: #Only create fresh keys (password locked)
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
@@ -232,8 +232,8 @@ def setup(mode):
             text = (
                 "CRITICAL: DO NOT FORGET YOUR PASSCODE.\nWITHOUT IT, "
                 "YOUR DATA WILL BE LOST."
-                )
             )
+        )
         passcode_instructions.pack()
         passcode_input.pack(fill = "x")
         save.pack(fill = "both")
@@ -245,14 +245,14 @@ def setup(mode):
                 "and store them somewhere secure\n"
                 "If other key files exist in the same"
                 "folder, they will be overwritten"
-                )
             )
+        )
         save_instructions.pack()
         save_input.pack(fill = "both")
         submit.config(text = "Create keys")
         submit.pack(pady = "10")
         crypto_mode = "just_key"
-    elif mode == 6:
+    elif mode == 6: #Only create fresh keys (no password)
         file_frame.pack_forget()
         file_label.pack_forget()
         file_instructions.pack_forget()
@@ -278,8 +278,8 @@ def setup(mode):
                 "and store them somewhere secure\n"
                 "If other key files exist in the same"
                 "folder, they will be overwritten"
-                )
             )
+        )
         save_instructions.pack()
         save_input.pack(fill = "both")
         submit.config(text = "Create keys")
@@ -318,7 +318,7 @@ def go(mode, save_folder=None, target_file=None, passkey=None):
     elif mode == "dec":
         rsa_dec(target_file, save_folder, passkey)
     elif mode == "weak_dec":
-        weak_dec(target_file, save_folder)
+        rsa_dec(target_file, save_folder, passkey)
     elif mode == "just_key":
         rsa_key(passkey, save_folder)
     elif mode == "weak_key":
@@ -335,20 +335,20 @@ frame.place(relwidth = 1, relheight = 1)
 header = tk.Label(
     frame,
     text = "figENC",
-    justify = "center",
+    justify = tk.CENTER,
     font = ("Arial", "24"),
     bg = "#643181",
     fg = "#B494C7"
-    )
+)
 subheader = tk.Label(
     frame,
     text = "Industry leading encryption by FIGBERT",
-    justify = "center",
+    justify = tk.CENTER,
     font = ("Arial", "18"),
     bg = "#643181",
     fg = "#B494C7",
     pady = "5"
-    )
+)
 header.pack(fill = "x", side = "top")
 subheader.pack(fill = "x", side = "top")
 
@@ -357,23 +357,22 @@ action.pack(fill = "both")
 action_label = tk.Label(
     action,
     text = "Action:",
-    justify = "left",
+    justify = tk.LEFT,
     font = ("Arial", "14"),
     bg = "#1A181C",
     fg = "#ACA0B2",
-    )
+)
 action_label.pack()
 action_list = tk.Listbox(
     action,
     font = ("Arial", "12"),
     bg = "#1A181C",
-    fg = "#b494C7",
-    bd = 1,
+    fg = "#B494C7",
     selectbackground = "#643181",
-    selectmode = "single",
+    selectmode = tk.SINGLE,
     height = 7,
     relief = tk.SUNKEN
-    )
+)
 action_list.insert(1, "Encrypt with fresh keys (password locked)")
 action_list.insert(2, "Encrypt with fresh keys (no password)")
 action_list.insert(3, "Encrypt with generated keys")
@@ -382,15 +381,25 @@ action_list.insert(5, "Decrypt with generated keys (no password)")
 action_list.insert(6, "Only create fresh keys (password locked)")
 action_list.insert(7, "Only create fresh keys (no password)")
 action_list.pack(fill = "both", pady = "10")
-submit_action = tk.Button(
-    action,
-    text = "Begin Process",
-    font = ("Arial", "12"),
-    fg = "#643181",
-    highlightthickness = 0,
-    highlightbackground = "#1A181C",
-    pady = "3",
-    command = lambda: setup(action_list.curselection())
+if platform == "darwin":
+    submit_action = tk.Button(
+        action,
+        text = "Begin Process",
+        font = ("Arial", "12"),
+        fg = "#643181",
+        highlightthickness = 0,
+        highlightbackground = "#1A181C",
+        pady = "3",
+        command = lambda: setup(action_list.curselection())
+    )
+else:
+    submit_action = tk.Button(
+        action,
+        text = " Begin Process",
+        font = ("Arial", "12"),
+        bg = "#643181",
+        fg = "#B494C7",
+        command = lambda: setup(action_list.curselection())
     )
 submit_action.pack()
 
@@ -403,14 +412,14 @@ file_label = tk.Label(
     font = ("Arial", "14"),
     bg = "#1A181C",
     fg = "#ACA0B2"
-    )
+)
 file_instructions = tk.Label(
     file_frame,
     text = "Separate filepaths with colons (:)",
     font = ("Arial", "11"),
     bg = "#1A181C",
     fg = "#B494C7"
-    )
+)
 file_input = tk.Entry(
     file_frame,
     font = ("Arial", "12"),
@@ -419,9 +428,8 @@ file_input = tk.Entry(
     bg = "#1A181C",
     fg = "#ACA0B2",
     insertbackground = "#ACA0B2",
-    relief = tk.SUNKEN,
-    borderwidth = 0.5
-    )
+    relief = tk.SUNKEN
+)
 passcode_frame = tk.Frame(step_two, bg = "#1A181C", pady = "8")
 passcode_label = tk.Label(
     passcode_frame,
@@ -429,14 +437,14 @@ passcode_label = tk.Label(
     font = ("Arial", "14"),
     bg = "#1A181C",
     fg = "#ACA0B2"
-    )
+)
 passcode_instructions = tk.Label(
     passcode_frame,
     text = "If you see this, the app broke",
     font = ("Arial", "11"),
     bg = "#1A181C",
     fg = "#B494C7"
-    )
+)
 passcode_input = tk.Entry(
     passcode_frame,
     font = ("Arial", "12"),
@@ -446,9 +454,8 @@ passcode_input = tk.Entry(
     show = "*",
     bg = "#1A181C",
     fg = "#ACA0B2",
-    insertbackground = "#ACA0B2",
-    borderwidth = 0.5
-    )
+    insertbackground = "#ACA0B2"
+)
 save = tk.Frame(step_two, bg = "#1A181C", pady = "8")
 save_label = tk.Label(
     save,
@@ -456,14 +463,14 @@ save_label = tk.Label(
     font = ("Arial", "14"),
     bg = "#1A181C",
     fg = "#ACA0B2"
-    )
+)
 save_instructions = tk.Label(
     save,
     text = "If you see this, the app broke",
     font = ("Arial", "11"),
     bg = "#1A181C",
     fg = "#B494C7"
-    )
+)
 save_input = tk.Entry(
     save,
     font = ("Arial", "12"),
@@ -472,22 +479,37 @@ save_input = tk.Entry(
     bg = "#1A181C",
     fg = "#ACA0B2",
     insertbackground = "#ACA0B2",
-    borderwidth = 0.5,
     relief = tk.SUNKEN
+)
+if platform == "darwin":
+    submit = tk.Button(
+        save,
+        text = "If you see this, the app broke",
+        font = ("Arial", "12"),
+        fg = "#643181",
+        highlightbackground = "#1A181C",
+        highlightthickness = 0,
+        pady = "3",
+        command = lambda: go(
+            mode = crypto_mode,
+            save_folder = save_input.get(),
+            target_file = file_input.get(),
+            passkey = passcode_input.get()
+        )
     )
-submit = tk.Button(
-    save,
-    text = "If you see this, the app broke",
-    font = ("Arial", "12"),
-    fg = "#643181",
-    highlightbackground = "#1A181C",
-    highlightthickness = 0,
-    pady = "3",
-    command = lambda: go(
-        mode = crypto_mode,
-        save_folder = save_input.get(),
-        target_file = file_input.get(),
-        passkey = passcode_input.get()
+else:
+    submit = tk.Button(
+        save,
+        text = "If you see this, the app broke",
+        font = ("Arial", "12"),
+        bg = "#643181",
+        fg = "#B494C7",
+        pady = "3",
+        command = lambda: go(
+            mode = crypto_mode,
+            save_folder = save_input.get(),
+            target_file = file_input.get(),
+            passkey = passcode_input.get()
         )
     )
 

@@ -16,32 +16,32 @@ def rsa_key(passkey, save_folder):
     #Generating three key objects (symmetric, private, public)
     symmetric_key = Fernet.generate_key()
     private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=4096,
-        backend=default_backend()
+        public_exponent = 65537,
+        key_size = 4096,
+        backend = default_backend()
     )
     public_key = private_key.public_key()
     #Converting the public and private key objects to a saveable format
     if passkey != "": #
         private_key_passcode = passkey
         private_key_text = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.BestAvailableEncryption(
+            encoding = serialization.Encoding.PEM,
+            format = serialization.PrivateFormat.PKCS8,
+            encryption_algorithm = serialization.BestAvailableEncryption(
                 bytes(private_key_passcode, 'utf-8')
                 )
         )
     else:
         private_key_text = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
+            encoding = serialization.Encoding.PEM,
+            format = serialization.PrivateFormat.PKCS8,
+            encryption_algorithm = serialization.NoEncryption()
         )
     public_key_text = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
+        encoding = serialization.Encoding.PEM,
+        format = serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    #Saves the keys to the provided directory.
+    #Saving the keys to the provided directory.
     if save_folder[-1] != '/':
         save_folder += '/'
     private_key_file = save_folder + 'private_key.pem'
