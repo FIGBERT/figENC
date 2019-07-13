@@ -50,10 +50,11 @@ def rsa_dec(target_file_raw, save_folder, passkey):
         symmetric_key = Fernet(symmetric_key_data)
     #Decrypting and outputting the data
     for target_file in target_file_list:
-        with open(target_file, "rb") as open_file:
-            encrypted_data = open_file.read()
-            original_message = symmetric_key.decrypt(encrypted_data)
-            open_file.write(original_message)
+        with open(target_file, "rb") as read_file:
+            encrypted_data = read_file.read()
+        original_message = symmetric_key.decrypt(encrypted_data)
+        with open(target_file, "wb") as write_file:
+            write_file.write(original_message)
     #Outputting the decrypted symmetric key
     with open(symmetric_key_source, "wb") as symmetric_file:
         symmetric_file.write(symmetric_key_data)
