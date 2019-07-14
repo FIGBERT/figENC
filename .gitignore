@@ -1,4 +1,7 @@
 #Ignoring the .vscode folder and all its contents, which contains personal settings
 .vscode
-#Ignoring the __pycache__ folder and all its contents, because it is compiled compiled
+#Ignoring the __pycache__ folder and all its contents, because it is compiled code
 Scripts/__pycache__
+#Ignoring some testing files
+Scripts/scrollbar_test.py
+Scripts/stackover.py
