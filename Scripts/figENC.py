@@ -342,7 +342,8 @@ header = tk.Label(
     justify=tk.CENTER,
     font=("Arial", "22"),
     bg="#643181",
-    fg="#B494C7"
+    fg="#F2DAFF",
+    pady="2"
 )
 subheader = tk.Label(
     frame,
@@ -350,8 +351,8 @@ subheader = tk.Label(
     justify=tk.CENTER,
     font=("Arial", "16"),
     bg="#643181",
-    fg="#B494C7",
-    pady="5"
+    fg="#F2DAFF",
+    pady="2"
 )
 header.pack(fill="x", side="top")
 subheader.pack(fill="x", side="top")
@@ -364,7 +365,7 @@ action_label = tk.Label(
     justify=tk.LEFT,
     font=("Arial", "16"),
     bg="#1A181C",
-    fg="#ACA0B2",
+    fg="#F2DAFF",
 )
 action_label.pack()
 action_list = tk.Listbox(
@@ -372,7 +373,7 @@ action_list = tk.Listbox(
     justify=tk.CENTER,
     font=("Arial", "14"),
     bg="#1A181C",
-    fg="#B494C7",
+    fg="#ACA0B2",
     selectbackground="#643181",
     selectmode=tk.SINGLE,
     relief=tk.SUNKEN,
@@ -416,7 +417,7 @@ file_label = tk.Label(
     text="If you see this, the app broke",
     font=("Arial", "16"),
     bg="#1A181C",
-    fg="#ACA0B2"
+    fg="#F2DAFF"
 )
 file_instructions = tk.Label(
     file_frame,
@@ -441,7 +442,7 @@ passcode_label = tk.Label(
     text="If you see this, the app broke",
     font=("Arial", "16"),
     bg="#1A181C",
-    fg="#ACA0B2"
+    fg="#F2DAFF"
 )
 passcode_instructions = tk.Label(
     passcode_frame,
@@ -467,7 +468,7 @@ save_label = tk.Label(
     text="Save location for keys",
     font=("Arial", "16"),
     bg="#1A181C",
-    fg="#ACA0B2"
+    fg="#F2DAFF"
 )
 save_instructions = tk.Label(
     save,

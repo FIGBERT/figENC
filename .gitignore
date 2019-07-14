@@ -1,0 +1,4 @@
+#Ignoring the .vscode folder and all its contents, which contains personal settings
+.vscode
+#Ignoring the __pycache__ folder and all its contents, because it is compiled compiled
+Scripts/__pycache__
