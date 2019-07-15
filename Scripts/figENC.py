@@ -1,8 +1,11 @@
 from sys import platform
+from os import makedirs, path
 import tkinter as tk
+from tkinter import messagebox
 from initiate_key import rsa_key
 from encrypt import rsa_enc
 from decrypt import rsa_dec
+import file_check as check
 
 crypto_mode = ""
 
@@ -297,9 +300,182 @@ def reset_text(entry_widget):
     entry_widget.insert(0,"")
 
 
+def missing_key(save_folder):
+    """Raise an error informing the user that the provided folder
+    where the keys should be stored is missing the required keys.
+    """
+    messagebox.showwarning(
+        "Missing Keys",
+        (
+        "The savefolder provided is missing the required keys to perform "
+        "the requested operation. Please correct this and try again."
+        "\n\nFolder Provided:\n%s" % save_folder
+        )
+    )
+
+
+def path_error(*args):
+    """Raise an error informing the user that the provided pathnames
+    are invalid.
+
+    Arguments:
+    *args -- all of the broken filepaths
+    """
+    errors = ""
+    num_errors = 0
+    for arg in args:
+        errors += (str(arg) + "\n")
+        num_errors += 1
+    messagebox.showwarning(
+        "Path Error",
+        (
+        "One or more of the filepaths provided are invalid."
+        "\nCheck that the filepath was entered correctly, or that the user "
+        "has permission to edit the file."
+        "\n\nBroken Filepaths:\n%s" % errors
+        )
+    )
+
+
+def quick_check(mode, target_file=None, save_folder=None):
+    """Return `True` only if both the target file and save folder provided
+    by the user are valid pathnames (If the save folder is createable but does
+    not exist, it will be created). Otherwise, return `False` and notify the
+    user with an error messagebox.
+    
+    Keyword arguments:
+    target_file -- a string pathname to a single file
+    save_folder -- a string pathname to a directory
+    """
+    if mode is "just_key" or mode is "weak_key":
+        if platform is "win32":
+            if (check.is_path_exists_or_creatable_portable(save_folder)):
+                try:
+                    makedirs(save_folder)
+                    return True
+                except OSError:
+                    return True
+            else:
+                return False
+        else:
+            if (check.is_path_exists_or_creatable(save_folder)):
+                try:
+                    makedirs(save_folder)
+                    return True
+                except OSError:
+                    return True
+            else:
+                return False
+    elif mode is "dec" or mode is "weak_dec" or mode is "enc":
+        if (
+            path.exists(target_file)
+            and path.exists(save_folder)
+        ):
+            if save_folder[-1] is not "/":
+                save_folder += "/"
+            if mode is "enc":
+                if (
+                    path.exists(save_folder + "public_key.pem")
+                    and path.exists(save_folder + "symmetric_key.key")
+                ):
+                    return True
+                else:
+                    missing_key(save_folder)
+                    return False
+            else:
+                if (
+                    path.exists(save_folder + "private_key.pem")
+                    and path.exists(save_folder + "symmetric_key.key")
+                ):
+                    return True
+                else:
+                    missing_key(save_folder)
+                    return False
+        elif (
+            path.exists(target_file)
+            and not path.exists(save_folder)
+        ):
+            path_error(save_folder)
+            return False
+        elif (
+            not path.exists(target_file)
+            and path.exists(save_folder)
+        ):
+            path_error(target_file)
+            return False
+        elif (
+            not path.exists(target_file)
+            and not path.exists(save_folder)
+        ):
+            path_error(target_file, save_folder)
+            return False
+    else:
+        if platform is "win32":
+            if (
+                path.exists(target_file)
+                and check.is_path_exists_or_creatable_portable(save_folder)
+            ):
+                try:
+                    makedirs(save_folder)
+                    return True
+                except OSError:
+                    return True
+            elif (
+                path.exists(target_file)
+                and not check.is_path_exists_or_creatable_portable(
+                    save_folder
+                )
+            ):
+                path_error(save_folder)
+                return False
+            elif (
+                not path.exists(target_file)
+                and check.is_path_exists_or_creatable_portable(save_folder)
+            ):
+                path_error(target_file)
+                return False
+            elif (
+                not path.exists(target_file)
+                and not check.is_path_exists_or_creatable_portable(
+                    save_folder
+                )
+            ):
+                path_error(target_file, save_folder)
+                return False
+        else:
+            if (
+                path.exists(target_file)
+                and check.is_path_exists_or_creatable(save_folder)
+            ):
+                try:
+                    makedirs(save_folder)
+                    return True
+                except OSError:
+                    return True
+            elif (
+                path.exists(target_file)
+                and not check.is_path_exists_or_creatable(save_folder)
+            ):
+                path_error(save_folder)
+                return False
+            elif (
+                not path.exists(target_file)
+                and check.is_path_exists_or_creatable(save_folder)
+            ):
+                path_error(target_file)
+                return False
+            elif (
+                not path.exists(target_file)
+                and not check.is_path_exists_or_creatable(save_folder)
+            ):
+                path_error(target_file, save_folder)
+                return False
+
+
 def go(mode, save_folder=None, target_file=None, passkey=None):
     """Perform the action corresponding to the mode,
-    using the input data from the user
+    using the input data from the user, after checking the validity
+    of the filepaths.
 
     Keyword arguments:
     mode -- the mode defined by setup() from action_list
@@ -307,22 +483,23 @@ def go(mode, save_folder=None, target_file=None, passkey=None):
     target_file -- the file to encrypt or decrypt (OPTIONAL)
     passkey - the access code to the RSA keys that have them (OPTIONAL)
     """
-    if mode == "key_enc":
-        rsa_key(passkey, save_folder)
-        rsa_enc(target_file, save_folder)
-    elif mode == "weak_key_enc":
-        rsa_key(passkey, save_folder)
-        rsa_enc(target_file, save_folder)
-    elif mode == "enc":
-        rsa_enc(target_file, save_folder)
-    elif mode == "dec":
-        rsa_dec(target_file, save_folder, passkey)
-    elif mode == "weak_dec":
-        rsa_dec(target_file, save_folder, passkey)
-    elif mode == "just_key":
-        rsa_key(passkey, save_folder)
-    elif mode == "weak_key":
-        rsa_key(passkey, save_folder)
+    if quick_check(mode=mode, target_file=target_file, save_folder=save_folder):
+        if mode == "key_enc":
+            rsa_key(passkey, save_folder)
+            rsa_enc(target_file, save_folder)
+        elif mode == "weak_key_enc":
+            rsa_key(passkey, save_folder)
+            rsa_enc(target_file, save_folder)
+        elif mode == "enc":
+            rsa_enc(target_file, save_folder)
+        elif mode == "dec":
+            rsa_dec(target_file, save_folder, passkey)
+        elif mode == "weak_dec":
+            rsa_dec(target_file, save_folder, passkey)
+        elif mode == "just_key":
+            rsa_key(passkey, save_folder)
+        elif mode == "weak_key":
+            rsa_key(passkey, save_folder)
 
 
 root = tk.Tk()
@@ -432,9 +609,9 @@ file_input = tk.Entry(
     justify=tk.CENTER,
     textvariable=tk.StringVar,
     bg="#1A181C",
-    fg="#ACA0B2",
-    insertbackground="#ACA0B2",
-    relief=tk.SUNKEN
+    fg="#F2DAFF",
+    highlightthickness=0,
+    insertbackground="#F2DAFF"
 )
 passcode_frame = tk.Frame(step_two, bg="#1A181C", pady="8")
 passcode_label = tk.Label(
@@ -456,11 +633,11 @@ passcode_input = tk.Entry(
     font=("Arial", "14"),
     justify=tk.CENTER,
     textvariable=tk.StringVar,
-    relief=tk.SUNKEN,
     show="*",
     bg="#1A181C",
-    fg="#ACA0B2",
-    insertbackground="#ACA0B2"
+    fg="#F2DAFF",
+    highlightthickness=0,
+    insertbackground="#F2DAFF"
 )
 save = tk.Frame(step_two, bg="#1A181C", pady="8")
 save_label = tk.Label(
@@ -483,9 +660,9 @@ save_input = tk.Entry(
     justify=tk.CENTER,
     textvariable=tk.StringVar,
     bg="#1A181C",
-    fg="#ACA0B2",
-    insertbackground="#ACA0B2",
-    relief=tk.SUNKEN
+    fg="#F2DAFF",
+    highlightthickness=0,
+    insertbackground="#F2DAFF"
 )
 if platform == "darwin":
     submit = tk.Button(
