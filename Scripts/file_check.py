@@ -1,4 +1,11 @@
-import errno, os, tempfile, sys
+import errno
+import os
+from os import makedirs, path
+import tempfile
+import sys
+from sys import platform
+import tkinter as tk
+from tkinter import messagebox
 
 #Windows-specific error code indicating an invalid pathname
 ERROR_INVALID_NAME = 123
@@ -104,3 +111,221 @@ def is_path_exists_or_creatable_portable(pathname: str) -> bool:
             os.path.exists(pathname) or is_path_sibling_creatable(pathname))
     except OSError:
         pass
+
+
+def overwrite():
+    """Raise an error informing the user that the provided folder
+    where they wish to write the keys has keys in that will be
+    overwritten if they continue. Returns `True` if they wish to
+    overwrite the keys, `False` otherwise.
+    """
+    return messagebox.askokcancel(
+        "Overwrite Keys",
+        (
+        "The savefolder provided already has keys stored. If you continue, "
+        "these keys will be overwritten and any files encrypted with them "
+        "will be lost forever.\n\nContinue?"
+        )
+    )
+
+
+def missing_key(save_folder):
+    """Raise an error informing the user that the provided folder
+    where the keys should be stored is missing the required keys.
+    """
+    messagebox.showwarning(
+        "Missing Keys",
+        (
+        "The savefolder provided is missing the required keys to perform "
+        "the requested operation. Please correct this and try again."
+        "\n\nFolder Provided:\n%s" % save_folder
+        )
+    )
+
+
+def path_error(*args):
+    """Raise an error informing the user that the provided pathnames
+    are invalid.
+
+    Arguments:
+    *args -- all of the broken filepaths
+    """
+    errors = ""
+    num_errors = 0
+    for arg in args:
+        errors += (str(arg) + "\n")
+        num_errors += 1
+    messagebox.showwarning(
+        "Path Error",
+        (
+        "One or more of the filepaths provided are invalid."
+        "\nCheck that the filepath was entered correctly, or that the user "
+        "has permission to edit the file."
+        "\n\nBroken Filepaths:\n%s" % errors
+        )
+    )
+
+
+def quick_check(mode, target_file=None, save_folder=None):
+    """Return `True` only if both the target file and save folder provided
+    by the user are valid pathnames (If the save folder is createable but does
+    not exist, it will be created). Otherwise, return `False` and notify the
+    user with an error messagebox.
+    
+    Keyword arguments:
+    target_file -- a string pathname to a single file
+    save_folder -- a string pathname to a directory
+    """
+    if mode is "just_key" or mode is "weak_key":
+        if platform is "win32":
+            if (is_path_exists_or_creatable_portable(save_folder)):
+                try:
+                    makedirs(save_folder)
+                    return True
+                except OSError:
+                    if save_folder[-1] != "/":
+                        save_folder += "/"
+                    if (
+                        path.exists(save_folder + "private_key.pem")
+                        or path.exists(save_folder + "public_key.pem")
+                        or path.exists(save_folder + "symmetric_key.key")
+                    ):
+                        return overwrite()
+            else:
+                return False
+        else:
+            if (is_path_exists_or_creatable(save_folder)):
+                try:
+                    makedirs(save_folder)
+                    return True
+                except OSError:
+                    if save_folder[-1] != "/":
+                        save_folder += "/"
+                    if (
+                        path.exists(save_folder + "private_key.pem")
+                        or path.exists(save_folder + "public_key.pem")
+                        or path.exists(save_folder + "symmetric_key.key")
+                    ):
+                        return overwrite()
+                    else:
+                        return True
+            else:
+                return False
+    elif mode is "dec" or mode is "weak_dec" or mode is "enc":
+        if (
+            path.exists(target_file)
+            and path.exists(save_folder)
+        ):
+            if save_folder[-1] is not "/":
+                save_folder += "/"
+            if mode is "enc":
+                if (
+                    path.exists(save_folder + "public_key.pem")
+                    and path.exists(save_folder + "symmetric_key.key")
+                ):
+                    return True
+                else:
+                    missing_key(save_folder)
+                    return False
+            else:
+                if (
+                    path.exists(save_folder + "private_key.pem")
+                    and path.exists(save_folder + "symmetric_key.key")
+                ):
+                    return True
+                else:
+                    missing_key(save_folder)
+                    return False
+        elif (
+            path.exists(target_file)
+            and not path.exists(save_folder)
+        ):
+            path_error(save_folder)
+            return False
+        elif (
+            not path.exists(target_file)
+            and path.exists(save_folder)
+        ):
+            path_error(target_file)
+            return False
+        elif (
+            not path.exists(target_file)
+            and not path.exists(save_folder)
+        ):
+            path_error(target_file, save_folder)
+            return False
+    else:
+        if platform is "win32":
+            if (
+                path.exists(target_file)
+                and is_path_exists_or_creatable_portable(save_folder)
+            ):
+                try:
+                    makedirs(save_folder)
+                    return True
+                except OSError:
+                    if save_folder[-1] != "/":
+                        save_folder += "/"
+                    if (
+                        path.exists(save_folder + "private_key.pem")
+                        or path.exists(save_folder + "public_key.pem")
+                        or path.exists(save_folder + "symmetric_key.key")
+                    ):
+                        return overwrite()
+            elif (
+                path.exists(target_file)
+                and not is_path_exists_or_creatable_portable(
+                    save_folder
+                )
+            ):
+                path_error(save_folder)
+                return False
+            elif (
+                not path.exists(target_file)
+                and is_path_exists_or_creatable_portable(save_folder)
+            ):
+                path_error(target_file)
+                return False
+            elif (
+                not path.exists(target_file)
+                and not is_path_exists_or_creatable_portable(
+                    save_folder
+                )
+            ):
+                path_error(target_file, save_folder)
+                return False
+        else:
+            if (
+                path.exists(target_file)
+                and is_path_exists_or_creatable(save_folder)
+            ):
+                try:
+                    makedirs(save_folder)
+                    return True
+                except OSError:
+                    if save_folder[-1] != "/":
+                        save_folder += "/"
+                    if (
+                        path.exists(save_folder + "private_key.pem")
+                        or path.exists(save_folder + "public_key.pem")
+                        or path.exists(save_folder + "symmetric_key.key")
+                    ):
+                        return overwrite()
+            elif (
+                path.exists(target_file)
+                and not is_path_exists_or_creatable(save_folder)
+            ):
+                path_error(save_folder)
+                return False
+            elif (
+                not path.exists(target_file)
+                and is_path_exists_or_creatable(save_folder)
+            ):
+                path_error(target_file)
+                return False
+            elif (
+                not path.exists(target_file)
+                and not is_path_exists_or_creatable(save_folder)
+            ):
+                path_error(target_file, save_folder)
+                return False
