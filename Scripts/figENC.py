@@ -238,7 +238,7 @@ def go(mode, save_folder=None, target_file=None, passkey=None, passcheck=None):
     passcheck - the access code to the RSA keys that have them confirmed,
     to prevent spelling errors.
     """
-    if check.quick_check(mode=mode, target_file=target_file, save_folder=save_folder):
+    if check.quick_check(mode=mode, target_file_raw=target_file, save_folder=save_folder):
         if mode == "key_enc" and check.password_check(passkey, passcheck):
             rsa_key(passkey, save_folder)
             rsa_enc(target_file, save_folder)
