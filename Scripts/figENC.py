@@ -264,7 +264,7 @@ canvas = tk.Canvas(
     height=700,
     width=700
 )
-canvas.pack()
+canvas.pack(fill=tk.BOTH, expand=True)
 frame = tk.Frame(canvas, bg="#1A181C")
 frame.place(relwidth=1, relheight=1)
 
