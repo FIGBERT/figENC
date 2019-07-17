@@ -191,6 +191,8 @@ def quick_check(mode, target_file=None, save_folder=None):
                         or path.exists(save_folder + "symmetric_key.key")
                     ):
                         return overwrite()
+                    else:
+                        return True
             else:
                 return False
         else:
@@ -272,6 +274,8 @@ def quick_check(mode, target_file=None, save_folder=None):
                         or path.exists(save_folder + "symmetric_key.key")
                     ):
                         return overwrite()
+                    else:
+                        return True
             elif (
                 path.exists(target_file)
                 and not is_path_exists_or_creatable_portable(
@@ -311,6 +315,8 @@ def quick_check(mode, target_file=None, save_folder=None):
                         or path.exists(save_folder + "symmetric_key.key")
                     ):
                         return overwrite()
+                    else:
+                        return True
             elif (
                 path.exists(target_file)
                 and not is_path_exists_or_creatable(save_folder)
