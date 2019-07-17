@@ -129,7 +129,7 @@ def overwrite():
     )
 
 
-def missing_key(save_folder):
+def missing_key_error(save_folder):
     """Raise an error informing the user that the provided folder
     where the keys should be stored is missing the required keys.
     """
@@ -227,7 +227,7 @@ def quick_check(mode, target_file=None, save_folder=None):
                 ):
                     return True
                 else:
-                    missing_key(save_folder)
+                    missing_key_error(save_folder)
                     return False
             else:
                 if (
@@ -236,7 +236,7 @@ def quick_check(mode, target_file=None, save_folder=None):
                 ):
                     return True
                 else:
-                    missing_key(save_folder)
+                    missing_key_error(save_folder)
                     return False
         elif (
             path.exists(target_file)
@@ -335,3 +335,21 @@ def quick_check(mode, target_file=None, save_folder=None):
             ):
                 path_error(target_file, save_folder)
                 return False
+
+def password_check(first_pass, second_pass):
+    if first_pass == second_pass:
+        return True
+    else:
+        password_error(first_pass, second_pass)
+        return False
+
+def password_error(one, two):
+    """"Raise an error informing the user that the provided passwords
+    do not match.
+    """
+    messagebox.showwarning(
+        "Passwords Do Not Match",
+        ("The passwords provided do not match. Please Try again."
+        "\n\nFirst: {}\nSecond: {}".format(one, two)
+        )
+    )

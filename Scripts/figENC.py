@@ -3,7 +3,7 @@ import tkinter as tk
 from initiate_key import rsa_key
 from encrypt import rsa_enc
 from decrypt import rsa_dec
-import file_check as check
+import check
 
 crypto_mode = ""
 
@@ -19,6 +19,10 @@ def reset():
     passcode_instructions.pack_forget()
     reset_text(passcode_input)
     passcode_input.pack_forget()
+    confirm_label.pack_forget()
+    confirm_instructions.pack_forget()
+    reset_text(confirm_input)
+    confirm_input.pack_forget()
     save.pack_forget()
     save_label.pack_forget()
     save_instructions.pack_forget()
@@ -55,6 +59,9 @@ def setup(mode):
         )
         passcode_instructions.pack()
         passcode_input.pack(fill="x")
+        confirm_label.pack()
+        confirm_instructions.pack()
+        confirm_input.pack(fill="x")
         save.pack(fill="both")
         save_label.config(text="Save location for keys")
         save_label.pack()
@@ -128,6 +135,9 @@ def setup(mode):
         )
         passcode_instructions.pack()
         passcode_input.pack(fill="x")
+        confirm_label.pack()
+        confirm_instructions.pack()
+        confirm_input.pack(fill="x")
         save.pack(fill="both")
         save_label.config(text="Key location")
         save_label.pack()
@@ -166,6 +176,9 @@ def setup(mode):
         )
         passcode_instructions.pack()
         passcode_input.pack(fill="x")
+        confirm_label.pack()
+        confirm_instructions.pack()
+        confirm_input.pack(fill="x")
         save.pack(fill="both")
         save_label.config(text="Save location for keys")
         save_label.pack()
@@ -212,7 +225,7 @@ def reset_text(entry_widget):
     entry_widget.insert(0,"")
 
 
-def go(mode, save_folder=None, target_file=None, passkey=None):
+def go(mode, save_folder=None, target_file=None, passkey=None, passcheck=None):
     """Perform the action corresponding to the mode,
     using the input data from the user, after checking the validity
     of the filepaths.
@@ -222,9 +235,11 @@ def go(mode, save_folder=None, target_file=None, passkey=None):
     save_folder -- the folder where the keys are or will be stored (OPTIONAL)
     target_file -- the file to encrypt or decrypt (OPTIONAL)
     passkey - the access code to the RSA keys that have them (OPTIONAL)
+    passcheck - the access code to the RSA keys that have them confirmed,
+    to prevent spelling errors.
     """
     if check.quick_check(mode=mode, target_file=target_file, save_folder=save_folder):
-        if mode == "key_enc":
+        if mode == "key_enc" and check.password_check(passkey, passcheck):
             rsa_key(passkey, save_folder)
             rsa_enc(target_file, save_folder)
         elif mode == "weak_key_enc":
@@ -232,11 +247,11 @@ def go(mode, save_folder=None, target_file=None, passkey=None):
             rsa_enc(target_file, save_folder)
         elif mode == "enc":
             rsa_enc(target_file, save_folder)
-        elif mode == "dec":
+        elif mode == "dec" and check.password_check(passkey, passcheck):
             rsa_dec(target_file, save_folder, passkey)
         elif mode == "weak_dec":
             rsa_dec(target_file, save_folder, passkey)
-        elif mode == "just_key":
+        elif mode == "just_key" and check.password_check(passkey, passcheck):
             rsa_key(passkey, save_folder)
         elif mode == "weak_key":
             rsa_key(passkey, save_folder)
@@ -379,6 +394,32 @@ passcode_input = tk.Entry(
     highlightthickness=0,
     insertbackground="#F2DAFF"
 )
+confirm_label = tk.Label(
+    passcode_frame,
+    text="Confirm passkey",
+    font=("Arial", "16"),
+    bg="#1A181C",
+    fg="#F2DAFF"
+)
+confirm_instructions = tk.Label(
+    passcode_frame,
+    text="Re-enter the provided passkey",
+    font=("Arial", "14"),
+    bg="#1A181C",
+    fg="#B494C7"
+)
+confirm_input = tk.Entry(
+    passcode_frame,
+    font=("Arial", "14"),
+    justify=tk.CENTER,
+    textvariable=tk.StringVar,
+    show="*",
+    bg="#1A181C",
+    fg="#F2DAFF",
+    highlightthickness=0,
+    insertbackground="#F2DAFF"
+)
+
 save = tk.Frame(step_two, bg="#1A181C", pady="8")
 save_label = tk.Label(
     save,
@@ -417,7 +458,8 @@ if platform == "darwin":
             mode=crypto_mode,
             save_folder=save_input.get(),
             target_file=file_input.get(),
-            passkey=passcode_input.get()
+            passkey=passcode_input.get(),
+            passcheck=confirm_input.get()
         )
     )
 else:
@@ -432,7 +474,8 @@ else:
             mode=crypto_mode,
             save_folder=save_input.get(),
             target_file=file_input.get(),
-            passkey=passcode_input.get()
+            passkey=passcode_input.get(),
+            passcheck=confirm_input.get()
         )
     )
 
