@@ -4,4 +4,3 @@
 Scripts/__pycache__
 #Ignoring some testing files
 Scripts/scrollbar_test.py
-Scripts/test_canvas.py
