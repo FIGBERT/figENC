@@ -316,7 +316,7 @@ canvas = ResizingCanvas(root, yscrollcommand=vscrollbar.set, highlightthickness=
 canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 vscrollbar.config(command=canvas.yview)
 frame = tk.Frame(canvas, bg="#1A181C")
-frame.pack(fill=tk.BOTH, side=tk.LEFT)
+canvas.create_window(0, 0, anchor=tk.NW, window=frame)
 
 header = tk.Label(
     frame,
@@ -528,7 +528,6 @@ else:
         )
     )
 
-canvas.create_window(0, 0, anchor=tk.NW, window=frame)
 frame.update()
 canvas.config(scrollregion=canvas.bbox("all"))
 
