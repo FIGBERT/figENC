@@ -312,7 +312,7 @@ def go(mode, save_folder=None, target_file=None, passkey=None, passcheck=None):
 
 root = tk.Tk()
 vscrollbar = AutoScrollbar(root)
-canvas = ResizingCanvas(root, yscrollcommand=vscrollbar.set, highlightthickness=0, bg="pink", height=700, width=700)
+canvas = ResizingCanvas(root, yscrollcommand=vscrollbar.set, highlightthickness=0)
 canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 vscrollbar.config(command=canvas.yview)
 frame = tk.Frame(canvas, bg="#1A181C")
