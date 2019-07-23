@@ -32,7 +32,7 @@ class SettingsApp():
         self.font_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
         self.font_label = tk.Label(
             self.font_frame,
-            text="Font Size:",
+            text="Font Size: ",
             justify=tk.LEFT,
             font=("Arial", str(self.settings["font_size"])),
             bg="#1A181C",
@@ -40,33 +40,23 @@ class SettingsApp():
             pady=2
         )
         self.font_label.pack(side=tk.LEFT)
-        self.font_options_selector = tk.Menubutton(
+        self.font_options = [12, 14, 16, 18, 20, 24, 32]
+        self.font_dropdown = tk.StringVar()
+        self.font_dropdown.set(self.settings["font_size"])
+        self.font_menu = tk.OptionMenu(
             self.font_frame,
-            font=("Arial", str(self.settings["font_size"] - 2)),
-            text=str(self.settings["font_size"]),
-            bg="#1A181C"
+            self.font_dropdown,
+            *self.font_options,
+            command=self.modify_font
         )
-        self.font_options = tk.Menu(
-            self.font_options_selector,
-            tearoff=0,
-            title=str(self.settings["font_size"])
-        )
-        self.font_options.add_radiobutton(label="12", variable=tk.IntVar())
-        self.font_options.add_radiobutton(label="14", variable=tk.IntVar())
-        self.font_options.add_radiobutton(label="16", variable=tk.IntVar())
-        self.font_options.add_radiobutton(label="18", variable=tk.IntVar())
-        self.font_options.add_radiobutton(label="20", variable=tk.IntVar())
-        self.font_options.add_radiobutton(label="24", variable=tk.IntVar())
-        self.font_options.add_radiobutton(label="32", variable=tk.IntVar())
-        self.font_options_selector.pack(side=tk.LEFT)
-        self.font_options_selector["menu"] = self.font_options
+        self.font_menu.config(bg="#1A181C", fg="#643181")
+        self.font_menu.pack(side=tk.LEFT)
 
-        scroll_bool = "on" if self.settings["scroll"] else "off"
         self.scroll_frame = tk.Frame(self.frame, bg="#1A181C")
         self.scroll_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
         self.scroll_label = tk.Label(
             self.scroll_frame,
-            text="Scrollbar:",
+            text="Scrollbar: ",
             justify=tk.LEFT,
             font=("Arial", str(self.settings["font_size"])),
             bg="#1A181C",
@@ -74,29 +64,18 @@ class SettingsApp():
             pady=2
         )
         self.scroll_label.pack(side=tk.LEFT)
-        self.scroll_options_selector = tk.Menubutton(
+        self.scroll_options = ["Off", "On"]
+        self.scroll_dropdown = tk.StringVar()
+        self.scroll_dropdown.set("On" if self.settings["scroll"] else "Off")
+        self.scroll_menu = tk.OptionMenu(
             self.scroll_frame,
-            font=("Arial", str(self.settings["font_size"] - 2)),
-            text=scroll_bool,
-            bg="#1A181C"
+            self.scroll_dropdown,
+            *self.scroll_options,
+            command=self.modify_scroll
         )
-        self.scroll_options = tk.Menu(
-            self.scroll_options_selector,
-            tearoff=0,
-            title=scroll_bool
-        )
-        self.scroll_options.add_radiobutton(
-            label="off",
-            variable=tk.IntVar(),
-            value=False
-        )
-        self.scroll_options.add_radiobutton(
-            label="on",
-            variable=tk.IntVar(),
-            value=True
-        )
-        self.scroll_options_selector.pack(side=tk.LEFT)
-        self.scroll_options_selector["menu"] = self.scroll_options
+        self.scroll_menu.config(bg="#1A181C", fg="#643181")
+        self.scroll_menu.pack(side=tk.LEFT)
+
 
         self.save_frame = tk.Frame(self.frame, bg="#1A181C")
         self.save_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, pady=5, padx=5)
@@ -127,7 +106,16 @@ class SettingsApp():
     def export(self, root):
         with open("settings.json", "w") as write_file:
             json.dump(self.settings, write_file, indent=4, sort_keys=True)
-        print(self.settings)
         root.destroy()
+    
+    def modify_font(self, value):
+        self.settings["font_size"] = value
+        self.frame.update()
 
-#SettingsApp()
+    def modify_scroll(self, value):
+        bool_val = True if value is "On" else False
+        self.settings["scroll"] = bool_val
+        self.frame.update()
+
+
+SettingsApp()
