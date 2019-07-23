@@ -33,9 +33,14 @@ def rsa_enc(target_file_raw, save_folder):
             symmetric_key_data = symmetric_key_file.read()
             symmetric_key = Fernet(symmetric_key_data)
         #Encrypting and outputting the data
-        with open(target_file) as read_file:
-            file_data = read_file.read()
-        data = symmetric_key.encrypt(bytes(file_data, 'utf-8'))
+        try:
+            with open(target_file) as read_file:
+                file_data = read_file.read()
+            data = symmetric_key.encrypt(bytes(file_data, 'utf-8'))
+        except UnicodeDecodeError:
+            with open(target_file, "rb") as read_file:
+                file_data = read_file.read()
+            data = symmetric_key.encrypt(file_data)
         with open(target_file, 'wb') as write_file:
             write_file.write(data)
     #Encrypting and outputting the symmetric key
