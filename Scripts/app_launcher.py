@@ -1,6 +1,5 @@
+from sys import platform
 from random import choice
-import time
-import threading
 from json import load
 import tkinter as tk
 from tkinter import ttk
@@ -13,7 +12,7 @@ class Launcher():
         self.root.wm_title("figENC")
         self.canvas = tk.Canvas(
             self.root,
-            height=100,
+            height=125,
             width=450
         )
         self.canvas.pack(fill=tk.BOTH, expand=True)
@@ -22,7 +21,7 @@ class Launcher():
         self.header = tk.Label(
             self.frame,
             text="Loading application...",
-            font=("Arial", "12"),
+            font=("Arial", "10"),
             bg="#1A181C",
             fg="#F2DAFF",
             pady="5"
@@ -31,13 +30,51 @@ class Launcher():
         self.subheader = tk.Label(
             self.frame,
             text=self.pick_tip(),
-            font=("Arial", "10"),
+            font=("Arial", "8"),
             bg="#1A181C",
             fg="#B494C7"
         )
         self.subheader.pack(side=tk.TOP)
         self.progressbar = ttk.Progressbar(self.frame, orient="horizontal", length=300, mode="determinate")
         self.progressbar.pack(side=tk.TOP)
+        self.button_frame = tk.Frame(self.frame, bg="#1A181C", pady=10)
+        self.button_frame.pack(side=tk.TOP)
+        if platform == "darwin":
+            self.launch_button = tk.Button(
+                self.button_frame,
+                fg="#B494C7",
+                text="Launch App",
+                font=("Arial", "8"),
+                highlightthickness=0,
+                highlightbackground="#1A181C"
+            )
+        else:
+            self.launch_button = tk.Button(
+                self.button_frame,
+                fg="#B494C7",
+                bg="#643181",
+                text="Launch App",
+                font=("Arial", "8")
+            )
+        if platform == "darwin":
+            self.settings_button = tk.Button(
+                self.button_frame,
+                fg="#B494C7",
+                text="Settings",
+                font=("Arial", "8"),
+                highlightthickness=0,
+                highlightbackground="#1A181C"
+            )
+        else:
+            self.settings_button = tk.Button(
+                self.button_frame,
+                fg="#B494C7",
+                bg="#643181",
+                text="Settings",
+                font=("Arial", "8")
+            )
+        self.launch_button.pack(side=tk.LEFT)
+        self.settings_button.pack(side=tk.RIGHT)
         self.root.mainloop()
     
     def pick_tip(self):
@@ -46,12 +83,11 @@ class Launcher():
         self.tip = "Tip: " + choice(self.tips)
         return self.tip
 
-    def load(self):
-        with open("settings.json") as read_file:
-            self.settings_file = load(read_file)
-        #Add something that checks the code against this link
-        #https://github.com/therealFIGBERT/figENC/tree/master/Executables/figENC.app/Contents
-        App(self.settings_file["font_size"], self.settings_file["scroll"])
+    def open_settings(self):
+        pass
+    
+    def launch_app(self):
+        pass
 
 
 Launcher()
