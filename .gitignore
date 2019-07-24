@@ -2,3 +2,5 @@
 .vscode
 #Ignoring the __pycache__ folder and all its contents, because it is compiled code
 Scripts/__pycache__
+#Ignoring Mac specific folder files
+.DS_Store
