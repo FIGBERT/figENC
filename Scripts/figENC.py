@@ -2,9 +2,11 @@ from sys import platform
 import tkinter as tk
 from random import choice
 import json
+import requests
 from initiate_key import rsa_key
 from encrypt import rsa_enc
 from decrypt import rsa_dec
+import version_check
 import check
 
 
@@ -411,6 +413,29 @@ class App():
         )
         self.scroll_menu.config(bg="#1A181C", fg="#643181")
         self.scroll_menu.pack(side=tk.LEFT)
+        self.update_frame = tk.Frame(self.frame, bg="#1A181C")
+        self.update_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
+        self.update_label = tk.Label(
+            self.update_frame,
+            text="Update Status: ",
+            justify=tk.LEFT,
+            font=("Arial", str(self.settings["font_size"])),
+            bg="#1A181C",
+            fg="#F2DAFF",
+            pady=2
+        )
+        self.update_label.pack(side=tk.LEFT)
+        self.update_bool = version_check.update_available()
+        self.update_status = tk.Label(
+            self.update_frame,
+            text="Available" if self.update_bool else "Up to date!",
+            justify=tk.LEFT,
+            font=("Arial", str(self.settings["font_size"])),
+            bg="#1A181C",
+            fg="#F2DAFF",
+            pady=2
+        )
+        self.update_status.pack(side=tk.LEFT)
         self.save_frame = tk.Frame(self.frame, bg="#1A181C")
         self.save_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, pady=5, padx=5)
         if platform == "darwin":
