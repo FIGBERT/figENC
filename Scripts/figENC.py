@@ -16,10 +16,11 @@ class App():
         Keyword arguments:
         root -- the Tk() frame for the main window
         """
+        self.crypto_mode = ""
+        self.show_pass = False
+
         with open("settings.json") as settings_file:
             settings = json.load(settings_file)
-        
-        self.crypto_mode = ""
 
         root.wm_title("figENC")
         self.canvas = tk.Canvas(
@@ -170,6 +171,7 @@ class App():
             highlightthickness=0,
             insertbackground="#F2DAFF"
         )
+        self.passcode_input.bind("<Button-2>", self.toggle_pass)
         self.confirm_label = tk.Label(
             self.passcode_frame,
             text="Confirm passkey",
@@ -195,6 +197,7 @@ class App():
             highlightthickness=0,
             insertbackground="#F2DAFF"
         )
+        self.confirm_input.bind("<Button-2>", self.toggle_pass)
         self.save = tk.Frame(self.step_two, bg="#1A181C", pady="8")
         self.save_label = tk.Label(
             self.save,
@@ -735,6 +738,16 @@ class App():
         self.bool_val = True if value is "On" else False
         self.settings["scroll"] = self.bool_val
         self.frame.update()
+
+    def toggle_pass(self, *args):
+        if self.show_pass:
+            self.passcode_input.config(show="")
+            self.confirm_input.config(show="")
+            self.show_pass = not self.show_pass
+        else:
+            self.passcode_input.config(show="*")
+            self.confirm_input.config(show="*")
+            self.show_pass = not self.show_pass
 
 if __name__ == "__main__":
     root = tk.Tk()
