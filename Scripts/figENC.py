@@ -432,7 +432,7 @@ class App():
             justify=tk.LEFT,
             font=("Arial", str(self.settings["font_size"])),
             bg="#1A181C",
-            fg="#F2DAFF",
+            fg="#84D373",
             pady=2
         )
         self.update_status.pack(side=tk.LEFT)
