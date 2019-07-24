@@ -8,20 +8,204 @@ from decrypt import rsa_dec
 import check
 
 
-class MainApp():
+class App():
 
-    def __init__(self, main, head_font, scroll_bool):
+    #the launcher window code
+    def __init__(self, root):
+        root.wm_title("figENC")
+        self.canvas = tk.Canvas(
+            root,
+            height=100,
+            width=450
+        )
+        self.canvas.pack(fill=tk.BOTH, expand=True)
+        self.frame = tk.Frame(self.canvas, bg="#1A181C")
+        self.frame.place(relwidth=1, relheight=1)
+        self.header = tk.Label(
+            self.frame,
+            text="Loading application...",
+            font=("Arial", "12"),
+            bg="#1A181C",
+            fg="#F2DAFF",
+            pady="5"
+        )
+        self.header.pack(side=tk.TOP)
+        self.subheader = tk.Label(
+            self.frame,
+            text=self.pick_tip(),
+            font=("Arial", "10"),
+            bg="#1A181C",
+            fg="#B494C7"
+        )
+        self.subheader.pack(side=tk.TOP)
+        self.button_frame = tk.Frame(self.frame, bg="#1A181C", pady=5)
+        self.button_frame.pack(side=tk.TOP)
+        if platform == "darwin":
+            self.launch_button = tk.Button(
+                self.button_frame,
+                fg="#643181",
+                text="Launch App",
+                font=("Arial", "10"),
+                highlightthickness=5,
+                highlightbackground="#1A181C",
+                command=lambda: self.launch_app(root)
+            )
+        else:
+            self.launch_button = tk.Button(
+                self.button_frame,
+                fg="#B494C7",
+                bg="#643181",
+                text="Launch App",
+                font=("Arial", "10"),
+                command=lambda: self.launch_app(root)
+            )
+        if platform == "darwin":
+            self.settings_button = tk.Button(
+                self.button_frame,
+                fg="#643181",
+                text="Settings",
+                font=("Arial", "10"),
+                highlightbackground="#1A181C",
+                highlightthickness=5,
+                command=lambda: self.open_settings(root)
+            )
+        else:
+            self.settings_button = tk.Button(
+                self.button_frame,
+                fg="#B494C7",
+                bg="#643181",
+                text="Settings",
+                font=("Arial", "10"),
+                command=lambda: self.open_settings(root)
+            )
+        self.launch_button.pack(side=tk.LEFT)
+        self.settings_button.pack(side=tk.RIGHT)
+        root.mainloop()
+    
+    #selects a tip for the launcher window to display
+    def pick_tip(self):
+        with open("tips.json") as source:
+            self.tips = json.load(source)
+        self.tip = "Tip: " + choice(self.tips)
+        return self.tip
+
+    def open_settings(self, root):
+        root.withdraw()
+        self.settings_window = tk.Toplevel(
+            height=400,
+            width=700,
+            bg="#1A181C"
+        )
+        self.settings_window.wm_title("figENC - Settings")
+        with open("settings.json") as settings_file:
+            self.settings = json.load(settings_file)
+        self.canvas = tk.Canvas(
+            self.settings_window,
+            height=400,
+            width=700
+        )
+        self.canvas.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
+        self.frame = tk.Frame(self.canvas, bg="#1A181C")
+        self.frame.place(relwidth=1, relheight=1)
+        self.header = tk.Label(
+            self.frame,
+            text="Settings",
+            justify=tk.CENTER,
+            font=("Arial", str(self.settings["font_size"] + 2)),
+            bg="#643181",
+            fg="#F2DAFF",
+            pady=2
+        )
+        self.header.pack(fill=tk.X)
+        self.font_frame = tk.Frame(self.frame, bg="#1A181C")
+        self.font_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
+        self.font_label = tk.Label(
+            self.font_frame,
+            text="Font Size: ",
+            justify=tk.LEFT,
+            font=("Arial", str(self.settings["font_size"])),
+            bg="#1A181C",
+            fg="#F2DAFF",
+            pady=2
+        )
+        self.font_label.pack(side=tk.LEFT)
+        self.font_options = [12, 14, 16, 18, 20, 24, 32]
+        self.font_dropdown = tk.StringVar()
+        self.font_dropdown.set(self.settings["font_size"])
+        self.font_menu = tk.OptionMenu(
+            self.font_frame,
+            self.font_dropdown,
+            *self.font_options,
+            command=self.modify_font
+        )
+        self.font_menu.config(bg="#1A181C", fg="#643181")
+        self.font_menu.pack(side=tk.LEFT)
+        self.scroll_frame = tk.Frame(self.frame, bg="#1A181C")
+        self.scroll_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
+        self.scroll_label = tk.Label(
+            self.scroll_frame,
+            text="Scrollbar: ",
+            justify=tk.LEFT,
+            font=("Arial", str(self.settings["font_size"])),
+            bg="#1A181C",
+            fg="#F2DAFF",
+            pady=2
+        )
+        self.scroll_label.pack(side=tk.LEFT)
+        self.scroll_options = ["Off", "On"]
+        self.scroll_dropdown = tk.StringVar()
+        self.scroll_dropdown.set("On" if self.settings["scroll"] else "Off")
+        self.scroll_menu = tk.OptionMenu(
+            self.scroll_frame,
+            self.scroll_dropdown,
+            *self.scroll_options,
+            command=self.modify_scroll
+        )
+        self.scroll_menu.config(bg="#1A181C", fg="#643181")
+        self.scroll_menu.pack(side=tk.LEFT)
+        self.save_frame = tk.Frame(self.frame, bg="#1A181C")
+        self.save_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, pady=5, padx=5)
+        if platform == "darwin":
+            self.save_button = tk.Button(
+                self.save_frame,
+                fg="#643181",
+                text="Save",
+                font=("Arial", str(self.settings["font_size"] - 2)),
+                highlightbackground="#1A181C",
+                padx=5,
+                command=lambda: self.export(self.settings_window, root)
+            )
+        else:
+            self.save_button = tk.Button(
+                self.save_frame,
+                fg="#B494C7",
+                bg="#643181",
+                text="Save",
+                font=("Arial", str(self.settings["font_size"] - 2)),
+                padx=5,
+                command=lambda: self.export(self.settings_window, root)
+            )
+        self.save_button.pack(side=tk.LEFT)
+        self.settings_window.mainloop()
+
+    def launch_app(self, root):
+        root.withdraw()
+        with open("settings.json") as settings_file:
+            settings = json.load(settings_file)
+        
         self.crypto_mode = ""
 
-        main.wm_title("figENC")
+        self.main_app = tk.Toplevel(height=700, width=700, bg="#1A181C")
+
+        self.main_app.wm_title("figENC")
         self.canvas = tk.Canvas(
-            main,
+            self.main_app,
             height=700,
             width=700
         )
-        if scroll_bool:
+        if settings["scroll"]:
             self.vertical_scroll = tk.Scrollbar(
-                main,
+                self.main_app,
                 command=self.canvas.yview
             )
             self.canvas.config(yscrollcommand=self.vertical_scroll.set)
@@ -33,7 +217,7 @@ class MainApp():
             self.frame,
             text="figENC",
             justify=tk.CENTER,
-            font=("Arial", str(head_font + 6)),
+            font=("Arial", str(settings["font_size"] + 6)),
             bg="#643181",
             fg="#F2DAFF",
             pady="2"
@@ -42,7 +226,7 @@ class MainApp():
             self.frame,
             text="Industry leading encryption by FIGBERT",
             justify=tk.CENTER,
-            font=("Arial", str(head_font)),
+            font=("Arial", str(settings["font_size"])),
             bg="#643181",
             fg="#F2DAFF",
             pady="2"
@@ -55,7 +239,7 @@ class MainApp():
             self.action,
             text="Action:",
             justify=tk.LEFT,
-            font=("Arial", str(head_font)),
+            font=("Arial", str(settings["font_size"])),
             bg="#1A181C",
             fg="#F2DAFF",
         )
@@ -63,7 +247,7 @@ class MainApp():
         self.action_list = tk.Listbox(
             self.action,
             justify=tk.CENTER,
-            font=("Arial", str(head_font - 2)),
+            font=("Arial", str(settings["font_size"] - 2)),
             bg="#1A181C",
             fg="#ACA0B2",
             selectbackground="#643181",
@@ -92,7 +276,7 @@ class MainApp():
             self.submit_action = tk.Button(
                 self.action,
                 text="Begin Process",
-                font=("Arial", str(head_font - 2)),
+                font=("Arial", str(settings["font_size"] - 2)),
                 fg="#643181",
                 highlightthickness=0,
                 highlightbackground="#1A181C",
@@ -103,7 +287,7 @@ class MainApp():
             self.submit_action = tk.Button(
                 self.action,
                 text="Begin Process",
-                font=("Arial", str(head_font - 2)),
+                font=("Arial", str(settings["font_size"] - 2)),
                 bg="#643181",
                 fg="#B494C7",
                 command=lambda: self.setup(self.action_list.curselection())
@@ -115,20 +299,20 @@ class MainApp():
         self.file_label = tk.Label(
             self.file_frame,
             text="If you see this, the app broke",
-            font=("Arial", str(head_font)),
+            font=("Arial", str(settings["font_size"])),
             bg="#1A181C",
             fg="#F2DAFF"
         )
         self.file_instructions = tk.Label(
             self.file_frame,
             text="Separate filepaths with colons (:)",
-            font=("Arial", str(head_font - 2)),
+            font=("Arial", str(settings["font_size"] - 2)),
             bg="#1A181C",
             fg="#B494C7"
         )
         self.file_input = tk.Entry(
             self.file_frame,
-            font=("Arial", str(head_font - 2)),
+            font=("Arial", str(settings["font_size"] - 2)),
             justify=tk.CENTER,
             textvariable=tk.StringVar,
             bg="#1A181C",
@@ -140,20 +324,20 @@ class MainApp():
         self.passcode_label = tk.Label(
             self.passcode_frame,
             text="If you see this, the app broke",
-            font=("Arial", str(head_font)),
+            font=("Arial", str(settings["font_size"])),
             bg="#1A181C",
             fg="#F2DAFF"
         )
         self.passcode_instructions = tk.Label(
             self.passcode_frame,
             text="If you see this, the app broke",
-            font=("Arial", str(head_font - 2)),
+            font=("Arial", str(settings["font_size"] - 2)),
             bg="#1A181C",
             fg="#B494C7"
         )
         self.passcode_input = tk.Entry(
             self.passcode_frame,
-            font=("Arial", str(head_font - 2)),
+            font=("Arial", str(settings["font_size"] - 2)),
             justify=tk.CENTER,
             textvariable=tk.StringVar,
             show="*",
@@ -165,20 +349,20 @@ class MainApp():
         self.confirm_label = tk.Label(
             self.passcode_frame,
             text="Confirm passkey",
-            font=("Arial", str(head_font)),
+            font=("Arial", str(settings["font_size"])),
             bg="#1A181C",
             fg="#F2DAFF"
         )
         self.confirm_instructions = tk.Label(
             self.passcode_frame,
             text="Re-enter the provided passkey",
-            font=("Arial", str(head_font - 2)),
+            font=("Arial", str(settings["font_size"] - 2)),
             bg="#1A181C",
             fg="#B494C7"
         )
         self.confirm_input = tk.Entry(
             self.passcode_frame,
-            font=("Arial", str(head_font - 2)),
+            font=("Arial", str(settings["font_size"] - 2)),
             justify=tk.CENTER,
             textvariable=tk.StringVar,
             show="*",
@@ -191,20 +375,20 @@ class MainApp():
         self.save_label = tk.Label(
             self.save,
             text="Save location for keys",
-            font=("Arial", str(head_font)),
+            font=("Arial", str(settings["font_size"])),
             bg="#1A181C",
             fg="#F2DAFF"
         )
         self.save_instructions = tk.Label(
             self.save,
             text="If you see this, the app broke",
-            font=("Arial", str(head_font - 2)),
+            font=("Arial", str(settings["font_size"] - 2)),
             bg="#1A181C",
             fg="#B494C7"
         )
         self.save_input = tk.Entry(
             self.save,
-            font=("Arial", str(head_font - 2)),
+            font=("Arial", str(settings["font_size"] - 2)),
             justify=tk.CENTER,
             textvariable=tk.StringVar,
             bg="#1A181C",
@@ -216,7 +400,7 @@ class MainApp():
             self.submit = tk.Button(
                 self.save,
                 text="If you see this, the app broke",
-                font=("Arial", str(head_font - 2)),
+                font=("Arial", str(settings["font_size"] - 2)),
                 fg="#643181",
                 highlightbackground="#1A181C",
                 highlightthickness=0,
@@ -233,7 +417,7 @@ class MainApp():
             self.submit = tk.Button(
                 self.save,
                 text="If you see this, the app broke",
-                font=("Arial", str(head_font - 2)),
+                font=("Arial", str(settings["font_size"] - 2)),
                 bg="#643181",
                 fg="#B494C7",
                 pady="3",
@@ -245,7 +429,7 @@ class MainApp():
                     passcheck=self.confirm_input.get()
                 )
             )
-        main.mainloop()
+        self.main_app.mainloop()
     
     def reset(self):
         self.file_frame.pack_forget()
@@ -509,114 +693,11 @@ class MainApp():
             elif mode == "weak_key":
                 rsa_key(passkey, save_folder)
 
-
-#MainApp(14, False)
-
-
-class SettingsApp():
-
-    def __init__(self, main):
-        with open("settings.json") as settings_file:
-            self.settings = json.load(settings_file)
-        main.wm_title("figENC - Settings")
-        self.canvas = tk.Canvas(
-            main,
-            height=400,
-            width=700
-        )
-        self.canvas.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
-        self.frame = tk.Frame(self.canvas, bg="#1A181C")
-        self.frame.place(relwidth=1, relheight=1)
-        self.header = tk.Label(
-            self.frame,
-            text="Settings",
-            justify=tk.CENTER,
-            font=("Arial", str(self.settings["font_size"] + 2)),
-            bg="#643181",
-            fg="#F2DAFF",
-            pady=2
-        )
-        self.header.pack(fill=tk.X)
-
-        self.font_frame = tk.Frame(self.frame, bg="#1A181C")
-        self.font_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
-        self.font_label = tk.Label(
-            self.font_frame,
-            text="Font Size: ",
-            justify=tk.LEFT,
-            font=("Arial", str(self.settings["font_size"])),
-            bg="#1A181C",
-            fg="#F2DAFF",
-            pady=2
-        )
-        self.font_label.pack(side=tk.LEFT)
-        self.font_options = [12, 14, 16, 18, 20, 24, 32]
-        self.font_dropdown = tk.StringVar()
-        self.font_dropdown.set(self.settings["font_size"])
-        self.font_menu = tk.OptionMenu(
-            self.font_frame,
-            self.font_dropdown,
-            *self.font_options,
-            command=self.modify_font
-        )
-        self.font_menu.config(bg="#1A181C", fg="#643181")
-        self.font_menu.pack(side=tk.LEFT)
-
-        self.scroll_frame = tk.Frame(self.frame, bg="#1A181C")
-        self.scroll_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
-        self.scroll_label = tk.Label(
-            self.scroll_frame,
-            text="Scrollbar: ",
-            justify=tk.LEFT,
-            font=("Arial", str(self.settings["font_size"])),
-            bg="#1A181C",
-            fg="#F2DAFF",
-            pady=2
-        )
-        self.scroll_label.pack(side=tk.LEFT)
-        self.scroll_options = ["Off", "On"]
-        self.scroll_dropdown = tk.StringVar()
-        self.scroll_dropdown.set("On" if self.settings["scroll"] else "Off")
-        self.scroll_menu = tk.OptionMenu(
-            self.scroll_frame,
-            self.scroll_dropdown,
-            *self.scroll_options,
-            command=self.modify_scroll
-        )
-        self.scroll_menu.config(bg="#1A181C", fg="#643181")
-        self.scroll_menu.pack(side=tk.LEFT)
-
-
-        self.save_frame = tk.Frame(self.frame, bg="#1A181C")
-        self.save_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, pady=5, padx=5)
-        if platform == "darwin":
-            self.save_button = tk.Button(
-                self.save_frame,
-                fg="#643181",
-                text="Save",
-                font=("Arial", str(self.settings["font_size"] - 2)),
-                highlightbackground="#1A181C",
-                padx=5,
-                command=lambda: self.export(main)
-            )
-        else:
-            self.save_button = tk.Button(
-                self.save_frame,
-                fg="#B494C7",
-                bg="#643181",
-                text="Save",
-                font=("Arial", str(self.settings["font_size"] - 2)),
-                padx=5,
-                command=lambda: self.export(main)
-            )
-        self.save_button.pack(side=tk.LEFT)
-
-        main.mainloop()
-
-    def export(self, root):
+    def export(self, settings_window, root):
         with open("settings.json", "w") as write_file:
             json.dump(self.settings, write_file, indent=4, sort_keys=True)
-        root.destroy()
+        settings_window.destroy()
+        root.deiconify()
     
     def modify_font(self, value):
         self.settings["font_size"] = value
@@ -627,98 +708,7 @@ class SettingsApp():
         self.settings["scroll"] = bool_val
         self.frame.update()
 
-
-#SettingsApp()
-
-
-class Launcher():
-
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.wm_title("figENC")
-        self.canvas = tk.Canvas(
-            self.root,
-            height=100,
-            width=450
-        )
-        self.canvas.pack(fill=tk.BOTH, expand=True)
-        self.frame = tk.Frame(self.canvas, bg="#1A181C")
-        self.frame.place(relwidth=1, relheight=1)
-        self.header = tk.Label(
-            self.frame,
-            text="Loading application...",
-            font=("Arial", "12"),
-            bg="#1A181C",
-            fg="#F2DAFF",
-            pady="5"
-        )
-        self.header.pack(side=tk.TOP)
-        self.subheader = tk.Label(
-            self.frame,
-            text=self.pick_tip(),
-            font=("Arial", "10"),
-            bg="#1A181C",
-            fg="#B494C7"
-        )
-        self.subheader.pack(side=tk.TOP)
-        self.button_frame = tk.Frame(self.frame, bg="#1A181C", pady=5)
-        self.button_frame.pack(side=tk.TOP)
-        if platform == "darwin":
-            self.launch_button = tk.Button(
-                self.button_frame,
-                fg="#643181",
-                text="Launch App",
-                font=("Arial", "10"),
-                highlightthickness=5,
-                highlightbackground="#1A181C",
-                command=lambda: self.launch_app(self.root)
-            )
-        else:
-            self.launch_button = tk.Button(
-                self.button_frame,
-                fg="#B494C7",
-                bg="#643181",
-                text="Launch App",
-                font=("Arial", "10"),
-                command=lambda: self.launch_app(self.root)
-            )
-        if platform == "darwin":
-            self.settings_button = tk.Button(
-                self.button_frame,
-                fg="#643181",
-                text="Settings",
-                font=("Arial", "10"),
-                highlightbackground="#1A181C",
-                highlightthickness=5,
-                command=lambda: self.open_settings(self.root)
-            )
-        else:
-            self.settings_button = tk.Button(
-                self.button_frame,
-                fg="#B494C7",
-                bg="#643181",
-                text="Settings",
-                font=("Arial", "10"),
-                command=lambda: self.open_settings(self.root)
-            )
-        self.launch_button.pack(side=tk.LEFT)
-        self.settings_button.pack(side=tk.RIGHT)
-        self.root.mainloop()
-    
-    def pick_tip(self):
-        with open("tips.json") as source:
-            self.tips = json.load(source)
-        self.tip = "Tip: " + choice(self.tips)
-        return self.tip
-
-    def open_settings(self, root):
-        self.settings = tk.Toplevel(height=400, width=700, bg="#1A181C")
-        SettingsApp(self.settings)
-
-    def launch_app(self, root):
-        with open("settings.json") as settings_file:
-            settings = json.load(settings_file)
-        self.main_app = tk.Toplevel(height=700, width=700, bg="#1A181C")
-        MainApp(self.main_app, settings["font_size"], settings["scroll"])
-
-Launcher()
+if __name__ == "__main__":
+    root = tk.Tk()
+    App(root)
+    root.mainloop()
