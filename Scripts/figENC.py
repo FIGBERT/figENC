@@ -1,4 +1,4 @@
-from sys import platform
+import sys, os, inspect
 import tkinter as tk
 from random import choice
 import json
@@ -20,15 +20,17 @@ class App():
         """
         self.crypto_mode = ""
         self.show_pass = False
+        self.settings_file = self.find_path("settings.json")
+        self.tips_file = self.find_path("tips.json")
 
-        with open("settings.json") as settings_file:
+        with open(self.settings_file) as settings_file:
             settings = json.load(settings_file)
 
         root.wm_title("figENC")
         self.canvas = tk.Canvas(
             root,
-            height=700,
-            width=700
+            height=settings["win_height"],
+            width=settings["win_width"]
         )
         if settings["scroll"]:
             self.vertical_scroll = tk.Scrollbar(
@@ -99,7 +101,7 @@ class App():
         self.action_list.insert(6, "Only create fresh keys (password locked)")
         self.action_list.insert(7, "Only create fresh keys (no password)")
         self.action_list.pack(fill="both", pady="10")
-        if platform == "darwin":
+        if sys.platform == "darwin":
             self.submit_action = tk.Button(
                 self.action,
                 text="Begin Process",
@@ -225,7 +227,7 @@ class App():
             highlightthickness=0,
             insertbackground="#F2DAFF"
         )
-        if platform == "darwin":
+        if sys.platform == "darwin":
             self.submit = tk.Button(
                 self.save,
                 text="If you see this, the app broke",
@@ -288,7 +290,7 @@ class App():
         self.subheader.pack(side=tk.TOP)
         self.button_frame = tk.Frame(self.frame, bg="#1A181C", pady=5)
         self.button_frame.pack(side=tk.TOP)
-        if platform == "darwin":
+        if sys.platform == "darwin":
             self.launch_button = tk.Button(
                 self.button_frame,
                 fg="#643181",
@@ -307,7 +309,7 @@ class App():
                 font=("Arial", "10"),
                 command=lambda: self.launch_app(root, self.launcher)
             )
-        if platform == "darwin":
+        if sys.platform == "darwin":
             self.settings_button = tk.Button(
                 self.button_frame,
                 fg="#643181",
@@ -347,12 +349,12 @@ class App():
             bg="#1A181C"
         )
         self.settings_window.wm_title("figENC - Settings")
-        with open("settings.json") as settings_file:
+        with open(self.settings_file) as settings_file:
             self.settings = json.load(settings_file)
         self.canvas = tk.Canvas(
             self.settings_window,
-            height=400,
-            width=700
+            height=self.settings["win_height"],
+            width=self.settings["win_width"]
         )
         self.canvas.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
         self.frame = tk.Frame(self.canvas, bg="#1A181C")
@@ -413,6 +415,75 @@ class App():
         )
         self.scroll_menu.config(bg="#1A181C", fg="#643181")
         self.scroll_menu.pack(side=tk.LEFT)
+        self.width_frame = tk.Frame(self.frame, bg="#1A181C")
+        self.width_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
+        self.width_label = tk.Label(
+            self.width_frame,
+            text="Default window width: ",
+            justify=tk.LEFT,
+            font=("Arial", str(self.settings["font_size"])),
+            bg="#1A181C",
+            fg="#F2DAFF",
+            pady=2
+        )
+        self.width_label.pack(side=tk.LEFT)
+        self.width_options = [500, 700, 900, 1000, 1200, 1500]
+        self.width_dropdown = tk.StringVar()
+        self.width_dropdown.set(self.settings["win_width"])
+        self.width_menu = tk.OptionMenu(
+            self.width_frame,
+            self.width_dropdown,
+            *self.width_options,
+            command=self.modify_width
+        )
+        self.width_menu.config(bg="#1A181C", fg="#643181")
+        self.width_menu.pack(side=tk.LEFT)
+        self.height_frame = tk.Frame(self.frame, bg="#1A181C")
+        self.height_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
+        self.height_label = tk.Label(
+            self.height_frame,
+            text="Default window height: ",
+            justify=tk.LEFT,
+            font=("Arial", str(self.settings["font_size"])),
+            bg="#1A181C",
+            fg="#F2DAFF",
+            pady=2
+        )
+        self.height_label.pack(side=tk.LEFT)
+        self.height_options = [500, 700, 900, 1000, 1200, 1500]
+        self.height_dropdown = tk.StringVar()
+        self.height_dropdown.set(self.settings["win_width"])
+        self.height_menu = tk.OptionMenu(
+            self.height_frame,
+            self.height_dropdown,
+            *self.height_options,
+            command=self.modify_height
+        )
+        self.height_menu.config(bg="#1A181C", fg="#643181")
+        self.height_menu.pack(side=tk.LEFT)
+        self.auto_frame = tk.Frame(self.frame, bg="#1A181C")
+        self.auto_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
+        self.auto_label = tk.Label(
+            self.auto_frame,
+            text="Automatic Updates: ",
+            justify=tk.LEFT,
+            font=("Arial", str(self.settings["font_size"])),
+            bg="#1A181C",
+            fg="#F2DAFF",
+            pady=2
+        )
+        self.auto_label.pack(side=tk.LEFT)
+        self.auto_options = ["Off", "On"]
+        self.auto_dropdown = tk.StringVar()
+        self.auto_dropdown.set("On" if self.settings["auto_update"] else "Off")
+        self.auto_menu = tk.OptionMenu(
+            self.auto_frame,
+            self.auto_dropdown,
+            *self.auto_options,
+            command=self.modify_auto
+        )
+        self.auto_menu.config(bg="#1A181C", fg="#643181")
+        self.auto_menu.pack(side=tk.LEFT)
         self.update_frame = tk.Frame(self.frame, bg="#1A181C")
         self.update_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
         self.update_label = tk.Label(
@@ -426,19 +497,28 @@ class App():
         )
         self.update_label.pack(side=tk.LEFT)
         self.update_bool = version_check.update_available()
+        if self.update_bool == "available":
+            self.update_text = "Available"
+            self.update_color = "#84D373"
+        elif self.update_bool == "updated":
+            self.update_text = "Up to date!"
+            self.update_color = "#B1A5B8"
+        else:
+            self.update_text = "Connection failed"
+            self.update_color = "#FC142F"
         self.update_status = tk.Label(
             self.update_frame,
-            text="Available" if self.update_bool else "Up to date!",
+            text=self.update_text,
             justify=tk.LEFT,
             font=("Arial", str(self.settings["font_size"])),
             bg="#1A181C",
-            fg="#84D373",
+            fg=self.update_color,
             pady=2
         )
         self.update_status.pack(side=tk.LEFT)
         self.save_frame = tk.Frame(self.frame, bg="#1A181C")
         self.save_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, pady=5, padx=5)
-        if platform == "darwin":
+        if sys.platform == "darwin":
             self.save_button = tk.Button(
                 self.save_frame,
                 fg="#643181",
@@ -463,7 +543,7 @@ class App():
     
     def pick_tip(self):
         """Return a random string from the tips.json file"""
-        with open("tips.json") as source:
+        with open(self.tips_file) as source:
             self.tips = json.load(source)
         self.tip = "Tip: " + choice(self.tips)
         return self.tip
@@ -740,7 +820,7 @@ class App():
         settings_window -- the window of the app to destory
         root -- the window of the app to deiconify()
         """
-        with open("settings.json", "w") as write_file:
+        with open(self.settings_file, "w") as write_file:
             json.dump(self.settings, write_file, indent=4, sort_keys=True)
         settings_window.destroy()
         root.deiconify()
@@ -760,11 +840,45 @@ class App():
         Keyword arguments:
         value -- a string, "on" or "off", to be converted to a boolean
         """
-        self.bool_val = True if value is "On" else False
-        self.settings["scroll"] = self.bool_val
+        bool_val = True if value is "On" else False
+        self.settings["scroll"] = bool_val
+        self.frame.update()
+
+    def modify_auto(self, value):
+        """Change the value of the auto_update key in the self.settings
+        variable
+        
+        Keyword arguments:
+        value -- a string, "on" or "off" to be converted to a boolean
+        """
+        bool_val = True if value is "On" else False
+        self.settings["auto_update"] = bool_val
+        self.frame.update()
+
+    def modify_width(self, value):
+        """Change the value of the win_width key in the self.settings
+        variable
+        
+        Keyword arguments:
+        value -- an int represeting the new width of the window
+        """
+        self.settings["win_width"] = value
+        self.frame.update()
+
+    def modify_height(self, value):
+        """Change the value of the win_height key in the self.settings
+        variable
+        
+        Keyword arguments:
+        value -- an int represeting the new height of the window
+        """
+        self.settings["win_height"] = value
         self.frame.update()
 
     def toggle_pass(self, *args):
+        """Toogle the password fields between showing the characters and
+        hiding them.
+        """
         if self.show_pass:
             self.passcode_input.config(show="")
             self.confirm_input.config(show="")
@@ -773,6 +887,36 @@ class App():
             self.passcode_input.config(show="*")
             self.confirm_input.config(show="*")
             self.show_pass = not self.show_pass
+
+    def find_path(self, filename):
+        """Return the filepath from the filename when running from a
+        pyinstaller onefile application.
+        
+        Keyword arguments:
+        filename -- the filename to convert to a filepath
+        """
+        if hasattr(sys, '_MEIPASS'):
+            # PyInstaller >= 1.6
+            os.chdir(sys._MEIPASS)
+            filename = os.path.join(sys._MEIPASS, filename)
+        elif '_MEIPASS2' in os.environ:
+            # PyInstaller < 1.6 (tested on 1.5 only)
+            os.chdir(os.environ['_MEIPASS2'])
+            filename = os.path.join(os.environ['_MEIPASS2'], filename)
+        else:
+            os.chdir(os.path.dirname(sys.argv[0]))
+            filename = os.path.join(os.path.dirname(sys.argv[0]), filename)
+        return filename
+
+    # def find_path(self, file):
+    #     """Return the correct filename if you are running it as a script"""
+    #     return os.path.dirname(
+    #         os.path.abspath(
+    #             inspect.getfile(
+    #                 inspect.currentframe()
+    #             )
+    #         )
+    #     ) + "/{}".format(file)
 
 if __name__ == "__main__":
     root = tk.Tk()

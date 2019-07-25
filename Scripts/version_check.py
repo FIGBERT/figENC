@@ -1,10 +1,21 @@
 import requests
+import subprocess
 
 def update_available():
-    git_import = requests.get("https://raw.githubusercontent.com/therealFIGBERT/figENC/master/Scripts/version.txt").text
+    try:
+        git_import = requests.get(
+            ("https://raw.githubusercontent.com/therealFIGBERT/figENC/master"
+            "/Scripts/version.txt"
+            )
+        ).text
+    except requests.exceptions.ConnectionError:
+        return "offline"
     with open("version.txt") as local:
         local_version = local.read()
     if local_version < git_import:
-        return True
+        return "available"
     else:
-        return False
+        return "updated"
+
+def update_and_replace():
+    pass
