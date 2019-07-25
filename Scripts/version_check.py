@@ -4,8 +4,8 @@ import subprocess
 def update_available():
     try:
         git_import = requests.get(
-            ("https://raw.githubusercontent.com/therealFIGBERT/figENC/master"
-            "/Scripts/version.txt"
+            ("https://raw.githubusercontent.com/therealFIGBERT/figENC/"
+            "master/Executables/figENC.app/Contents/Resources/version.txt"
             )
         ).text
     except requests.exceptions.ConnectionError:
