@@ -2,6 +2,7 @@ import errno
 import os
 from os import makedirs, path
 import tempfile
+import inspect
 import sys
 from sys import platform
 import tkinter as tk
@@ -143,27 +144,72 @@ def missing_key_error(save_folder):
     )
 
 
-def path_error(*args):
+def path_error(paths):
     """Raise an error informing the user that the provided pathnames
     are invalid.
 
     Arguments:
-    *args -- all of the broken filepaths
+    paths -- all of the broken filepaths
     """
-    errors = ""
-    num_errors = 0
-    for arg in args:
-        errors += (str(arg) + "\n")
-        num_errors += 1
     messagebox.showwarning(
         "Path Error",
         (
         "One or more of the filepaths provided are invalid."
         "\nCheck that the filepath was entered correctly, or that the user "
         "has permission to edit the file."
-        "\n\nBroken Filepaths:\n%s" % errors
+        "\n\nBroken Filepaths:\n%s" % paths
         )
     )
+
+def password_error(one, two):
+    """"Raise an error informing the user that the provided passwords
+    do not match.
+    """
+    messagebox.showwarning(
+        "Passwords Do Not Match",
+        ("The passwords provided do not match. Please Try again."
+        "\n\nFirst: {}\nSecond: {}".format(one, two)
+        )
+    )
+
+def password_check(first_pass, second_pass):
+    if first_pass == second_pass:
+        return True
+    else:
+        password_error(first_pass, second_pass)
+        return False
+
+
+# def find_path(filename):
+#     """Return the filepath from the filename when running from a
+#     pyinstaller onefile application.
+    
+#     Keyword arguments:
+#     filename -- the filename to convert to a filepath
+#     """
+#     if hasattr(sys, '_MEIPASS'):
+#         # PyInstaller >= 1.6
+#         os.chdir(sys._MEIPASS)
+#         filename = os.path.join(sys._MEIPASS, filename)
+#     elif '_MEIPASS2' in os.environ:
+#         # PyInstaller < 1.6 (tested on 1.5 only)
+#         os.chdir(os.environ['_MEIPASS2'])
+#         filename = os.path.join(os.environ['_MEIPASS2'], filename)
+#     else:
+#         os.chdir(os.path.dirname(sys.argv[0]))
+#         filename = os.path.join(os.path.dirname(sys.argv[0]), filename)
+#     return filename
+
+
+def find_path(file):
+        """Return the correct filename if you are running it as a script"""
+        return os.path.dirname(
+            os.path.abspath(
+                inspect.getfile(
+                    inspect.currentframe()
+                )
+            )
+        ) + "/{}".format(file)
 
 
 def quick_check(mode, target_file_raw=None, save_folder=None):
@@ -176,182 +222,209 @@ def quick_check(mode, target_file_raw=None, save_folder=None):
     target_file_raw -- a string list of pathnames
     save_folder -- a string pathname to a directory
     """
-    target_file_list = target_file_raw.split(":")
-    for target_file in target_file_list:
-        if mode is "just_key" or mode is "weak_key":
-            if platform is "win32":
-                if (is_path_exists_or_creatable_portable(save_folder)):
-                    try:
-                        makedirs(save_folder)
-                        return True
-                    except OSError:
-                        if save_folder[-1] != "/":
-                            save_folder += "/"
-                        if (
-                            path.exists(save_folder + "private_key.pem")
-                            or path.exists(save_folder + "public_key.pem")
-                            or path.exists(save_folder + "symmetric_key.key")
-                        ):
-                            return overwrite()
-                        else:
-                            return True
-                else:
-                    return False
+    save_folder += "/" if save_folder[-1] is not "/" else ""
+    if mode is not "just_key" or mode is not "weak_key":
+        target_file_list = target_file_raw.split(":")
+        targets_exist = True
+        broken_paths = ""
+        for target_file in target_file_list:
+            if targets_exist:
+                if not os.path.exists(target_file):
+                    target_file = False
+                    broken_paths += (target_file + "\n")
             else:
-                if (is_path_exists_or_creatable(save_folder)):
-                    try:
-                        makedirs(save_folder)
-                        return True
-                    except OSError:
-                        if save_folder[-1] != "/":
-                            save_folder += "/"
-                        if (
-                            path.exists(save_folder + "private_key.pem")
-                            or path.exists(save_folder + "public_key.pem")
-                            or path.exists(save_folder + "symmetric_key.key")
-                        ):
-                            return overwrite()
-                        else:
-                            return True
-                else:
-                    return False
-        elif mode is "dec" or mode is "weak_dec" or mode is "enc":
-            if (
-                path.exists(target_file)
-                and path.exists(save_folder)
-            ):
-                if save_folder[-1] is not "/":
-                    save_folder += "/"
-                if mode is "enc":
+                if not os.path.exists(target_file):
+                    broken_paths += (target_file + "\n")
+        if not targets_exist:
+            path_error(broken_paths)
+            return False
+    if (
+        mode is "just_key"
+        or mode is "weak_key"
+        or mode is "key_enc"
+        or mode is "weak_key_enc"
+    ):
+        if platform is "win32":
+            if is_path_exists_or_creatable_portable(save_folder):
+                try:
+                    os.makedirs(save_folder)
+                    return True
+                except OSError:
                     if (
-                        path.exists(save_folder + "public_key.pem")
-                        and path.exists(save_folder + "symmetric_key.key")
+                        os.path.exists(save_folder + "symmetric_key.key")
+                        or os.path.exists(save_folder + "private_key.pem")
+                        or os.path.exists(save_folder + "public_key.pem")
                     ):
-                        return True
+                        return overwrite()
                     else:
-                        missing_key_error(save_folder)
-                        return False
-                else:
-                    if (
-                        path.exists(save_folder + "private_key.pem")
-                        and path.exists(save_folder + "symmetric_key.key")
-                    ):
                         return True
-                    else:
-                        missing_key_error(save_folder)
-                        return False
-            elif (
-                path.exists(target_file)
-                and not path.exists(save_folder)
-            ):
-                path_error(save_folder)
-                return False
-            elif (
-                not path.exists(target_file)
-                and path.exists(save_folder)
-            ):
-                path_error(target_file)
-                return False
-            elif (
-                not path.exists(target_file)
-                and not path.exists(save_folder)
-            ):
-                path_error(target_file, save_folder)
+            else:
                 return False
         else:
-            if platform is "win32":
-                if (
-                    path.exists(target_file)
-                    and is_path_exists_or_creatable_portable(save_folder)
-                ):
-                    try:
-                        makedirs(save_folder)
+            if is_path_exists_or_creatable(save_folder):
+                try:
+                    os.makedirs(save_folder)
+                    return True
+                except OSError:
+                    if (
+                        os.path.exists(save_folder + "symmetric_key.key")
+                        or os.path.exists(save_folder + "private_key.pem")
+                        or os.path.exists(save_folder + "public_key.pem")
+                    ):
+                        return overwrite()
+                    else:
                         return True
-                    except OSError:
-                        if save_folder[-1] != "/":
-                            save_folder += "/"
-                        if (
-                            path.exists(save_folder + "private_key.pem")
-                            or path.exists(save_folder + "public_key.pem")
-                            or path.exists(save_folder + "symmetric_key.key")
-                        ):
-                            return overwrite()
-                        else:
-                            return True
-                elif (
-                    path.exists(target_file)
-                    and not is_path_exists_or_creatable_portable(
-                        save_folder
-                    )
-                ):
-                    path_error(save_folder)
-                    return False
-                elif (
-                    not path.exists(target_file)
-                    and is_path_exists_or_creatable_portable(save_folder)
-                ):
-                    path_error(target_file)
-                    return False
-                elif (
-                    not path.exists(target_file)
-                    and not is_path_exists_or_creatable_portable(
-                        save_folder
-                    )
-                ):
-                    path_error(target_file, save_folder)
+            else:
+                return False
+    elif mode is "dec" or mode is "weak_dec":
+        encryption_type = ""
+        for target_file in target_file_list:
+            with open(target_file, "rb") as read_file:
+                content = read_file.read()
+            if (
+                content[-1] == b"1"
+                and (encryption_type is "" or encryption_type is "SYM")
+            ):
+                encryption_type = "SYM"
+            elif (
+                content[-1] == b"1"
+                and (encryption_type is "RSA" or encryption_type is "MIX")
+            ):
+                encryption_type = "MIX"
+            elif (
+                content[-1] == b"0"
+                and (encryption_type is "" or encryption_type is "RSA")
+            ):
+                encryption_type = "RSA"
+            elif (
+                content[-1] == b"0"
+                and (encryption_type is "SYM" or encryption_type is "MIX")
+            ):
+                encryption_type = "MIX"
+        if encryption_type is "RSA":
+            if platform is "win32":
+                if os.path.exists(save_folder):
+                    if (
+                        os.path.exists(save_folder + "private_key.pem")
+                        and os.path.exists(save_folder + "public_key.pem")
+                    ):
+                        return True
+                    else:
+                        missing_key_error(save_folder)
+                        return False
+                else:
                     return False
             else:
-                if (
-                    path.exists(target_file)
-                    and is_path_exists_or_creatable(save_folder)
-                ):
-                    try:
-                        makedirs(save_folder)
+                if os.path.exists(save_folder):
+                    if (
+                        os.path.exists(save_folder + "private_key.pem")
+                        and os.path.exists(save_folder + "public_key.pem")
+                    ):
                         return True
-                    except OSError:
-                        if save_folder[-1] != "/":
-                            save_folder += "/"
-                        if (
-                            path.exists(save_folder + "private_key.pem")
-                            or path.exists(save_folder + "public_key.pem")
-                            or path.exists(save_folder + "symmetric_key.key")
-                        ):
-                            return overwrite()
-                        else:
-                            return True
-                elif (
-                    path.exists(target_file)
-                    and not is_path_exists_or_creatable(save_folder)
-                ):
-                    path_error(save_folder)
+                    else:
+                        missing_key_error(save_folder)
+                        return False
+                else:
                     return False
-                elif (
-                    not path.exists(target_file)
-                    and is_path_exists_or_creatable(save_folder)
-                ):
-                    path_error(target_file)
+        else:
+            if platform is "win32":
+                if os.path.exists(save_folder):
+                    if (
+                        os.path.exists(save_folder + "private_key.pem")
+                        and os.path.exists(save_folder + "public_key.pem")
+                        and os.path.exists(save_folder + "symmetric_key.key")
+                    ):
+                        return True
+                    else:
+                        missing_key_error(save_folder)
+                        return False
+                else:
                     return False
-                elif (
-                    not path.exists(target_file)
-                    and not is_path_exists_or_creatable(save_folder)
-                ):
-                    path_error(target_file, save_folder)
+            else:
+                if os.path.exists(save_folder):
+                    if (
+                        os.path.exists(save_folder + "private_key.pem")
+                        and os.path.exists(save_folder + "public_key.pem")
+                        and os.path.exists(save_folder + "symmetric_key.key")
+                    ):
+                        return True
+                    else:
+                        missing_key_error(save_folder)
+                        return False
+                else:
                     return False
-
-def password_check(first_pass, second_pass):
-    if first_pass == second_pass:
-        return True
     else:
-        password_error(first_pass, second_pass)
-        return False
-
-def password_error(one, two):
-    """"Raise an error informing the user that the provided passwords
-    do not match.
-    """
-    messagebox.showwarning(
-        "Passwords Do Not Match",
-        ("The passwords provided do not match. Please Try again."
-        "\n\nFirst: {}\nSecond: {}".format(one, two)
-        )
-    )
+        encryption_type = ""
+        for target_file in target_file_list:
+            if (
+                os.path.getsize(target_file) > 446
+                and (encryption_type is "" or encryption_type is "SYM")
+            ):
+                encryption_type = "SYM"
+            elif (
+                os.path.getsize(target_file) > 446
+                and (encryption_type is "RSA" or encryption_type is "MIX")
+            ):
+                encryption_type = "MIX"
+            elif (
+                os.path.getsize(target_file) <= 446
+                and (encryption_type is "" or encryption_type is "RSA")
+            ):
+                encryption_type = "RSA"
+            elif (
+                os.path.getsize(target_file) <= 446
+                and (encryption_type is "SYM" or encryption_type is "MIX")
+            ):
+                encryption_type = "MIX"
+        if encryption_type is "RSA":
+            if platform is "win32":
+                if os.path.exists(save_folder):
+                    if (
+                        os.path.exists(save_folder + "private_key.pem")
+                        and os.path.exists(save_folder + "public_key.pem")
+                    ):
+                        return True
+                    else:
+                        missing_key_error(save_folder)
+                        return False
+                else:
+                    return False
+            else:
+                if os.path.exists(save_folder):
+                    if (
+                        os.path.exists(save_folder + "private_key.pem")
+                        and os.path.exists(save_folder + "public_key.pem")
+                    ):
+                        return True
+                    else:
+                        missing_key_error(save_folder)
+                        return False
+                else:
+                    return False
+        else:
+            if platform is "win32":
+                if os.path.exists(save_folder):
+                    if (
+                        os.path.exists(save_folder + "private_key.pem")
+                        and os.path.exists(save_folder + "public_key.pem")
+                        and os.path.exists(save_folder + "symmetric_key.key")
+                    ):
+                        return True
+                    else:
+                        missing_key_error(save_folder)
+                        return False
+                else:
+                    return False
+            else:
+                if os.path.exists(save_folder):
+                    if (
+                        os.path.exists(save_folder + "private_key.pem")
+                        and os.path.exists(save_folder + "public_key.pem")
+                        and os.path.exists(save_folder + "symmetric_key.key")
+                    ):
+                        return True
+                    else:
+                        missing_key_error(save_folder)
+                        return False
+                else:
+                    return False

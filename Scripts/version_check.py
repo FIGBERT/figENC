@@ -1,5 +1,7 @@
+import os
+import inspect
 import requests
-import subprocess
+from check import find_path
 
 def update_available():
     try:
@@ -10,7 +12,8 @@ def update_available():
         ).text
     except requests.exceptions.ConnectionError:
         return "offline"
-    with open("version.txt") as local:
+    version_file = find_path("version.txt")
+    with open(version_file) as local:
         local_version = local.read()
     if local_version < git_import:
         return "available"

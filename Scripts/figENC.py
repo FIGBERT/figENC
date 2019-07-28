@@ -8,6 +8,7 @@ from encrypt import rsa_enc
 from decrypt import rsa_dec
 import version_check
 import check
+from check import find_path
 
 
 class App():
@@ -20,8 +21,8 @@ class App():
         """
         self.crypto_mode = ""
         self.show_pass = False
-        self.settings_file = self.find_path("settings.json")
-        self.tips_file = self.find_path("tips.json")
+        self.settings_file = find_path("settings.json")
+        self.tips_file = find_path("tips.json")
 
         with open(self.settings_file) as settings_file:
             settings = json.load(settings_file)
@@ -110,7 +111,7 @@ class App():
                 highlightthickness=0,
                 highlightbackground="#1A181C",
                 pady="3",
-                command=lambda: self.setup(self.action_list.curselection())
+                command=lambda: self.setup(self.action_list.curselection(), self.frame, self.canvas)
             )
         else:
             self.submit_action = tk.Button(
@@ -119,7 +120,7 @@ class App():
                 font=("Arial", str(settings["font_size"] - 2)),
                 bg="#643181",
                 fg="#B494C7",
-                command=lambda: self.setup(self.action_list.curselection())
+                command=lambda: self.setup(self.action_list.curselection(), self.frame, self.canvas)
             )
         self.submit_action.pack()
         self.step_two = tk.Frame(self.frame, bg="#1A181C")
@@ -298,7 +299,7 @@ class App():
                 font=("Arial", "10"),
                 highlightthickness=5,
                 highlightbackground="#1A181C",
-                command=lambda: self.launch_app(root, self.launcher)
+                command=lambda: self.launch_app(root, self.launcher, self.frame, self.canvas)
             )
         else:
             self.launch_button = tk.Button(
@@ -307,7 +308,7 @@ class App():
                 bg="#643181",
                 text="Launch App",
                 font=("Arial", "10"),
-                command=lambda: self.launch_app(root, self.launcher)
+                command=lambda: self.launch_app(root, self.launcher, self.frame, self.canvas)
             )
         if sys.platform == "darwin":
             self.settings_button = tk.Button(
@@ -332,9 +333,11 @@ class App():
         self.settings_button.pack(side=tk.RIGHT)
         root.mainloop()
 
-    def launch_app(self, root, launcher):
+    def launch_app(self, root, launcher, frame, canvas):
         root.deiconify()
         launcher.destroy()
+        frame.update()
+        canvas.config(scrollregion=canvas.bbox("all"))
     
     def open_settings(self, root):
         """Open the settings window and temporarily minimize the root window
@@ -580,7 +583,7 @@ class App():
         entry_widget.delete(0,tk.END)
         entry_widget.insert(0,"")
 
-    def setup(self, mode):
+    def setup(self, mode, frame, canvas):
         """"Change the GUI to match the app mode,
         based on the user's action_list selection.
 
@@ -626,6 +629,8 @@ class App():
             self.submit.config(text="Encrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "key_enc"
+            frame.update()
+            canvas.config(scrollregion=canvas.bbox("all"))
         elif mode == 1: #Encrypt with fresh keys (no password)
             self.reset()
             self.file_frame.pack(fill="both")
@@ -649,6 +654,8 @@ class App():
             self.submit.config(text="Encrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "weak_key_enc"
+            frame.update()
+            canvas.config(scrollregion=canvas.bbox("all"))
         elif mode == 2: #Encrypt with generated keys
             self.reset()
             self.file_frame.pack(fill="both")
@@ -667,6 +674,8 @@ class App():
             self.submit.config(text="Encrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "enc"
+            frame.update()
+            canvas.config(scrollregion=canvas.bbox("all"))
         elif mode == 3: #Decrypt with generated keys (password locked)
             self.reset()
             self.file_frame.pack(fill="both")
@@ -699,6 +708,8 @@ class App():
             self.submit.config(text="Decrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "dec"
+            frame.update()
+            canvas.config(scrollregion=canvas.bbox("all"))
         elif mode == 4: #Decrypt with generated keys (no password)
             self.reset()
             self.file_frame.pack(fill="both")
@@ -717,6 +728,8 @@ class App():
             self.submit.config(text="Decrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "weak_dec"
+            frame.update()
+            canvas.config(scrollregion=canvas.bbox("all"))
         elif mode == 5: #Only create fresh keys (password locked)
             self.reset()
             self.passcode_frame.pack(fill="both")
@@ -749,6 +762,8 @@ class App():
             self.submit.config(text="Create keys")
             self.submit.pack(pady="10")
             self.crypto_mode = "just_key"
+            frame.update()
+            canvas.config(scrollregion=canvas.bbox("all"))
         elif mode == 6: #Only create fresh keys (no password)
             self.reset()
             self.save.pack(fill="both")
@@ -767,6 +782,8 @@ class App():
             self.submit.config(text="Create keys")
             self.submit.pack(pady="10")
             self.crypto_mode = "weak_key"
+            frame.update()
+            canvas.config(scrollregion=canvas.bbox("all"))
 
     def go(
         self,
@@ -793,6 +810,7 @@ class App():
             target_file_raw=target_file,
             save_folder=save_folder
         ):
+            print("1. Quick check works")
             if mode == "key_enc" and check.password_check(passkey, passcheck):
                 rsa_key(passkey, save_folder)
                 rsa_enc(target_file, save_folder)
@@ -804,6 +822,7 @@ class App():
             elif mode == "dec" and check.password_check(passkey, passcheck):
                 rsa_dec(target_file, save_folder, passkey)
             elif mode == "weak_dec":
+                print("2. Reached function call")
                 rsa_dec(target_file, save_folder, passkey)
             elif mode == "just_key" and check.password_check(passkey,
                                                                 passcheck):
@@ -888,35 +907,6 @@ class App():
             self.confirm_input.config(show="*")
             self.show_pass = not self.show_pass
 
-    def find_path(self, filename):
-        """Return the filepath from the filename when running from a
-        pyinstaller onefile application.
-        
-        Keyword arguments:
-        filename -- the filename to convert to a filepath
-        """
-        if hasattr(sys, '_MEIPASS'):
-            # PyInstaller >= 1.6
-            os.chdir(sys._MEIPASS)
-            filename = os.path.join(sys._MEIPASS, filename)
-        elif '_MEIPASS2' in os.environ:
-            # PyInstaller < 1.6 (tested on 1.5 only)
-            os.chdir(os.environ['_MEIPASS2'])
-            filename = os.path.join(os.environ['_MEIPASS2'], filename)
-        else:
-            os.chdir(os.path.dirname(sys.argv[0]))
-            filename = os.path.join(os.path.dirname(sys.argv[0]), filename)
-        return filename
-
-    # def find_path(self, file):
-    #     """Return the correct filename if you are running it as a script"""
-    #     return os.path.dirname(
-    #         os.path.abspath(
-    #             inspect.getfile(
-    #                 inspect.currentframe()
-    #             )
-    #         )
-    #     ) + "/{}".format(file)
 
 if __name__ == "__main__":
     root = tk.Tk()
