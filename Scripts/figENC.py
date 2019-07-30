@@ -111,7 +111,7 @@ class App():
                 highlightthickness=0,
                 highlightbackground="#1A181C",
                 pady="3",
-                command=lambda: self.setup(self.action_list.curselection(), self.frame, self.canvas)
+                command=lambda: self.setup(self.action_list.curselection())
             )
         else:
             self.submit_action = tk.Button(
@@ -120,7 +120,7 @@ class App():
                 font=("Arial", str(settings["font_size"] - 2)),
                 bg="#643181",
                 fg="#B494C7",
-                command=lambda: self.setup(self.action_list.curselection(), self.frame, self.canvas)
+                command=lambda: self.setup(self.action_list.curselection())
             )
         self.submit_action.pack()
         self.step_two = tk.Frame(self.frame, bg="#1A181C")
@@ -299,7 +299,7 @@ class App():
                 font=("Arial", "10"),
                 highlightthickness=5,
                 highlightbackground="#1A181C",
-                command=lambda: self.launch_app(root, self.launcher, self.frame, self.canvas)
+                command=lambda: self.launch_app(root)
             )
         else:
             self.launch_button = tk.Button(
@@ -308,7 +308,7 @@ class App():
                 bg="#643181",
                 text="Launch App",
                 font=("Arial", "10"),
-                command=lambda: self.launch_app(root, self.launcher, self.frame, self.canvas)
+                command=lambda: self.launch_app(root)
             )
         if sys.platform == "darwin":
             self.settings_button = tk.Button(
@@ -333,11 +333,11 @@ class App():
         self.settings_button.pack(side=tk.RIGHT)
         root.mainloop()
 
-    def launch_app(self, root, launcher, frame, canvas):
+    def launch_app(self, root):
         root.deiconify()
-        launcher.destroy()
-        frame.update()
-        canvas.config(scrollregion=canvas.bbox("all"))
+        self.launcher.destroy()
+        self.frame.update()
+        self.canvas.config(scrollregion=self.canvas.bbox("all"))
     
     def open_settings(self, root):
         """Open the settings window and temporarily minimize the root window
@@ -583,7 +583,7 @@ class App():
         entry_widget.delete(0,tk.END)
         entry_widget.insert(0,"")
 
-    def setup(self, mode, frame, canvas):
+    def setup(self, mode):
         """"Change the GUI to match the app mode,
         based on the user's action_list selection.
 
@@ -629,8 +629,8 @@ class App():
             self.submit.config(text="Encrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "key_enc"
-            frame.update()
-            canvas.config(scrollregion=canvas.bbox("all"))
+            self.frame.update()
+            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 1: #Encrypt with fresh keys (no password)
             self.reset()
             self.file_frame.pack(fill="both")
@@ -654,8 +654,8 @@ class App():
             self.submit.config(text="Encrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "weak_key_enc"
-            frame.update()
-            canvas.config(scrollregion=canvas.bbox("all"))
+            self.frame.update()
+            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 2: #Encrypt with generated keys
             self.reset()
             self.file_frame.pack(fill="both")
@@ -674,8 +674,8 @@ class App():
             self.submit.config(text="Encrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "enc"
-            frame.update()
-            canvas.config(scrollregion=canvas.bbox("all"))
+            self.frame.update()
+            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 3: #Decrypt with generated keys (password locked)
             self.reset()
             self.file_frame.pack(fill="both")
@@ -708,8 +708,8 @@ class App():
             self.submit.config(text="Decrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "dec"
-            frame.update()
-            canvas.config(scrollregion=canvas.bbox("all"))
+            self.frame.update()
+            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 4: #Decrypt with generated keys (no password)
             self.reset()
             self.file_frame.pack(fill="both")
@@ -728,8 +728,8 @@ class App():
             self.submit.config(text="Decrypt file/s")
             self.submit.pack(pady="10")
             self.crypto_mode = "weak_dec"
-            frame.update()
-            canvas.config(scrollregion=canvas.bbox("all"))
+            self.frame.update()
+            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 5: #Only create fresh keys (password locked)
             self.reset()
             self.passcode_frame.pack(fill="both")
@@ -762,8 +762,8 @@ class App():
             self.submit.config(text="Create keys")
             self.submit.pack(pady="10")
             self.crypto_mode = "just_key"
-            frame.update()
-            canvas.config(scrollregion=canvas.bbox("all"))
+            self.frame.update()
+            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 6: #Only create fresh keys (no password)
             self.reset()
             self.save.pack(fill="both")
@@ -782,8 +782,8 @@ class App():
             self.submit.config(text="Create keys")
             self.submit.pack(pady="10")
             self.crypto_mode = "weak_key"
-            frame.update()
-            canvas.config(scrollregion=canvas.bbox("all"))
+            self.frame.update()
+            self.canvas.config(scrollregion=self.canvas.bbox("all"))
 
     def go(
         self,
