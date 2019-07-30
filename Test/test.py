@@ -1,5 +1,6 @@
 import os
 import requests
+import inspect
 import tkinter as tk
 
 def find_path(file):
