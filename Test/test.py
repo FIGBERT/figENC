@@ -3,7 +3,7 @@ import requests
 import tkinter as tk
 
 def update_script():
-    git_data = requests.get("https://raw.githubusercontent.com/therealFIGBERT/figENC/master/Test/test.py")
+    git_data = requests.get("https://raw.githubusercontent.com/therealFIGBERT/figENC/master/Test/test.py").text
     with open(os.getcwd() + "test.py", "w") as write:
         write.write(git_data)
 
