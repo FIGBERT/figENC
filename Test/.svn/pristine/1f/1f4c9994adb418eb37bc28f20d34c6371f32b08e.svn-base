@@ -1,11 +1,17 @@
 import os
 import requests
+import subprocess
 import tkinter as tk
 
 def update_script():
-    git_data = requests.get("https://raw.githubusercontent.com/therealFIGBERT/figENC/master/Test/test.py")
-    with open(os.getcwd() + "test.py", "w") as write:
-        write.write(git_data)
+    subprocess.run(
+        [
+            "svn", 
+            "checkout",
+            "https://github.com/therealFIGBERT/figENC/trunk/Test"
+        ],
+        shell=False
+    )
 
 #This line is only on GitHub
 root = tk.Tk()
