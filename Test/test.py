@@ -8,7 +8,7 @@ def update_script():
         [
             "svn", 
             "checkout",
-            "https://github.com/therealFIGBERT/figENC/trunk/Test/test.py"
+            "https://github.com/therealFIGBERT/figENC/trunk/Test"
         ],
         shell=False
     )
