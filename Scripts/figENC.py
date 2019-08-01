@@ -9,6 +9,7 @@ from decrypt import rsa_dec
 import version_check
 import check
 from check import find_path
+import update as up
 
 
 class App():
@@ -909,6 +910,7 @@ class App():
 
 
 if __name__ == "__main__":
+    up.check_for_updates()
     root = tk.Tk()
     App(root)
     root.mainloop()

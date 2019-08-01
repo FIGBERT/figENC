@@ -19,6 +19,3 @@ def update_available():
         return "available"
     else:
         return "updated"
-
-def update_and_replace():
-    pass
