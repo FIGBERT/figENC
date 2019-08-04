@@ -9,7 +9,6 @@ from decrypt import rsa_dec
 import version_check
 import check
 from check import find_path
-import update as up
 
 
 class App():
@@ -34,13 +33,6 @@ class App():
             height=settings["win_height"],
             width=settings["win_width"]
         )
-        if settings["scroll"]:
-            self.vertical_scroll = tk.Scrollbar(
-                root,
-                command=self.canvas.yview
-            )
-            self.canvas.config(yscrollcommand=self.vertical_scroll.set)
-            self.vertical_scroll.pack(side=tk.RIGHT, fill=tk.Y)
         self.canvas.pack(fill="both", expand=True, side=tk.LEFT)
         self.frame = tk.Frame(self.canvas, bg="#1A181C")
         self.frame.place(relwidth=1, relheight=1)
@@ -338,7 +330,6 @@ class App():
         root.deiconify()
         self.launcher.destroy()
         self.frame.update()
-        self.canvas.config(scrollregion=self.canvas.bbox("all"))
     
     def open_settings(self, root):
         """Open the settings window and temporarily minimize the root window
@@ -367,10 +358,10 @@ class App():
             self.frame,
             text="Settings",
             justify=tk.CENTER,
-            font=("Arial", str(self.settings["font_size"] + 2)),
+            font=("Arial", str(self.settings["font_size"] + 4)),
             bg="#643181",
             fg="#F2DAFF",
-            pady=2
+            pady=6
         )
         self.header.pack(fill=tk.X)
         self.font_frame = tk.Frame(self.frame, bg="#1A181C")
@@ -396,29 +387,6 @@ class App():
         )
         self.font_menu.config(bg="#1A181C", fg="#643181")
         self.font_menu.pack(side=tk.LEFT)
-        self.scroll_frame = tk.Frame(self.frame, bg="#1A181C")
-        self.scroll_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
-        self.scroll_label = tk.Label(
-            self.scroll_frame,
-            text="Scrollbar: ",
-            justify=tk.LEFT,
-            font=("Arial", str(self.settings["font_size"])),
-            bg="#1A181C",
-            fg="#F2DAFF",
-            pady=2
-        )
-        self.scroll_label.pack(side=tk.LEFT)
-        self.scroll_options = ["Off", "On"]
-        self.scroll_dropdown = tk.StringVar()
-        self.scroll_dropdown.set("On" if self.settings["scroll"] else "Off")
-        self.scroll_menu = tk.OptionMenu(
-            self.scroll_frame,
-            self.scroll_dropdown,
-            *self.scroll_options,
-            command=self.modify_scroll
-        )
-        self.scroll_menu.config(bg="#1A181C", fg="#643181")
-        self.scroll_menu.pack(side=tk.LEFT)
         self.width_frame = tk.Frame(self.frame, bg="#1A181C")
         self.width_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
         self.width_label = tk.Label(
@@ -465,29 +433,6 @@ class App():
         )
         self.height_menu.config(bg="#1A181C", fg="#643181")
         self.height_menu.pack(side=tk.LEFT)
-        self.auto_frame = tk.Frame(self.frame, bg="#1A181C")
-        self.auto_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
-        self.auto_label = tk.Label(
-            self.auto_frame,
-            text="Automatic Updates: ",
-            justify=tk.LEFT,
-            font=("Arial", str(self.settings["font_size"])),
-            bg="#1A181C",
-            fg="#F2DAFF",
-            pady=2
-        )
-        self.auto_label.pack(side=tk.LEFT)
-        self.auto_options = ["Off", "On"]
-        self.auto_dropdown = tk.StringVar()
-        self.auto_dropdown.set("On" if self.settings["auto_update"] else "Off")
-        self.auto_menu = tk.OptionMenu(
-            self.auto_frame,
-            self.auto_dropdown,
-            *self.auto_options,
-            command=self.modify_auto
-        )
-        self.auto_menu.config(bg="#1A181C", fg="#643181")
-        self.auto_menu.pack(side=tk.LEFT)
         self.update_frame = tk.Frame(self.frame, bg="#1A181C")
         self.update_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
         self.update_label = tk.Label(
@@ -631,7 +576,6 @@ class App():
             self.submit.pack(pady="10")
             self.crypto_mode = "key_enc"
             self.frame.update()
-            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 1: #Encrypt with fresh keys (no password)
             self.reset()
             self.file_frame.pack(fill="both")
@@ -656,7 +600,6 @@ class App():
             self.submit.pack(pady="10")
             self.crypto_mode = "weak_key_enc"
             self.frame.update()
-            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 2: #Encrypt with generated keys
             self.reset()
             self.file_frame.pack(fill="both")
@@ -676,7 +619,6 @@ class App():
             self.submit.pack(pady="10")
             self.crypto_mode = "enc"
             self.frame.update()
-            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 3: #Decrypt with generated keys (password locked)
             self.reset()
             self.file_frame.pack(fill="both")
@@ -710,7 +652,6 @@ class App():
             self.submit.pack(pady="10")
             self.crypto_mode = "dec"
             self.frame.update()
-            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 4: #Decrypt with generated keys (no password)
             self.reset()
             self.file_frame.pack(fill="both")
@@ -730,7 +671,6 @@ class App():
             self.submit.pack(pady="10")
             self.crypto_mode = "weak_dec"
             self.frame.update()
-            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 5: #Only create fresh keys (password locked)
             self.reset()
             self.passcode_frame.pack(fill="both")
@@ -764,7 +704,6 @@ class App():
             self.submit.pack(pady="10")
             self.crypto_mode = "just_key"
             self.frame.update()
-            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         elif mode == 6: #Only create fresh keys (no password)
             self.reset()
             self.save.pack(fill="both")
@@ -784,7 +723,6 @@ class App():
             self.submit.pack(pady="10")
             self.crypto_mode = "weak_key"
             self.frame.update()
-            self.canvas.config(scrollregion=self.canvas.bbox("all"))
 
     def go(
         self,
@@ -854,15 +792,6 @@ class App():
         self.settings["font_size"] = value
         self.frame.update()
 
-    def modify_scroll(self, value):
-        """Change the value of the scroll key in the self.settings variable
-        
-        Keyword arguments:
-        value -- a string, "on" or "off", to be converted to a boolean
-        """
-        bool_val = True if value is "On" else False
-        self.settings["scroll"] = bool_val
-        self.frame.update()
 
     def modify_auto(self, value):
         """Change the value of the auto_update key in the self.settings
@@ -910,7 +839,6 @@ class App():
 
 
 if __name__ == "__main__":
-    up.check_for_updates()
     root = tk.Tk()
     App(root)
     root.mainloop()

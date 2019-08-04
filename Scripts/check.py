@@ -180,36 +180,36 @@ def password_check(first_pass, second_pass):
         return False
 
 
-# def find_path(filename):
-#     """Return the filepath from the filename when running from a
-#     pyinstaller onefile application.
+def find_path(filename):
+    """Return the filepath from the filename when running from a
+    pyinstaller onefile application.
     
-#     Keyword arguments:
-#     filename -- the filename to convert to a filepath
-#     """
-#     if hasattr(sys, '_MEIPASS'):
-#         # PyInstaller >= 1.6
-#         os.chdir(sys._MEIPASS)
-#         filename = os.path.join(sys._MEIPASS, filename)
-#     elif '_MEIPASS2' in os.environ:
-#         # PyInstaller < 1.6 (tested on 1.5 only)
-#         os.chdir(os.environ['_MEIPASS2'])
-#         filename = os.path.join(os.environ['_MEIPASS2'], filename)
-#     else:
-#         os.chdir(os.path.dirname(sys.argv[0]))
-#         filename = os.path.join(os.path.dirname(sys.argv[0]), filename)
-#     return filename
+    Keyword arguments:
+    filename -- the filename to convert to a filepath
+    """
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller >= 1.6
+        os.chdir(sys._MEIPASS)
+        filename = os.path.join(sys._MEIPASS, filename)
+    elif '_MEIPASS2' in os.environ:
+        # PyInstaller < 1.6 (tested on 1.5 only)
+        os.chdir(os.environ['_MEIPASS2'])
+        filename = os.path.join(os.environ['_MEIPASS2'], filename)
+    else:
+        os.chdir(os.path.dirname(sys.argv[0]))
+        filename = os.path.join(os.path.dirname(sys.argv[0]), filename)
+    return filename
 
 
-def find_path(file):
-        """Return the correct filename if you are running it as a script"""
-        return os.path.dirname(
-            os.path.abspath(
-                inspect.getfile(
-                    inspect.currentframe()
-                )
-            )
-        ) + "/{}".format(file)
+# def find_path(file):
+#         """Return the correct filename if you are running it as a script"""
+#         return os.path.dirname(
+#             os.path.abspath(
+#                 inspect.getfile(
+#                     inspect.currentframe()
+#                 )
+#             )
+#         ) + "/{}".format(file)
 
 
 def quick_check(mode, target_file_raw=None, save_folder=None):
