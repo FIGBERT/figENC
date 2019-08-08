@@ -1,6 +1,4 @@
-import os
-import inspect
-import requests
+import os, inspect, requests, sys
 from check import find_path
 
 def update_available():

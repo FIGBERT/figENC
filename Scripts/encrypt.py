@@ -1,6 +1,4 @@
 import os
-import inspect
-from check import find_path
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
@@ -48,7 +46,7 @@ def Symmetric(target_file, public_key_source, symmetric_key_source):
     with open(target_file, "wb") as write_file:
         write_file.write(data)
 
-def rsa_enc(target_file_raw, save_folder):
+def enc_manager(target_files, save_folder):
     """Encrypt all files passed to the function with the symmetric key,
     and then replace the symmetric key file's contents with an encrypted
     version, encrypted with the public key.
@@ -57,37 +55,24 @@ def rsa_enc(target_file_raw, save_folder):
     target_file_raw -- a string composed of file locations seperated by colons
     save_folder -- the location of the saved key trio
     """
-    #Turning target_file_raw from a list in string form to a list
-    target_file_list = target_file_raw.split(":")
-    if save_folder[-1] != "/":
-            save_folder += "/"
-    #Determining the key source
-    public_key_source = save_folder + "public_key.pem"
-    symmetric_key_source = save_folder + "symmetric_key.key"
-    encryption_type = ""
-    for target_file in target_file_list:
-        if os.path.getsize(target_file) > 446:
-            Symmetric(target_file, public_key_source, symmetric_key_source)
-            if encryption_type is "" or encryption_type is "SYM":
-                encryption_type = "SYM"
-            else:
-                encryption_type = "MIX"
-        else:
-            RSA(target_file, public_key_source)
-            if encryption_type is "" or encryption_type is "RSA":
-                encryption_type = "RSA"
-            else:
-                encryption_type = "MIX"
-    if encryption_type is "RSA":
-        os.remove(symmetric_key_source)
+    pub_src = save_folder + "/public_key.pem"
+    sym_src = save_folder + "/symmetric_key.key"
+    if not os.path.exists(sym_src):
+        for fl in target_files:
+            RSA(fl, pub_src)
     else:
-        with open(public_key_source, "rb") as public_key_file, \
-            open(symmetric_key_source, "rb") as symmetric_key_file:
+        for fl in target_files:
+            if os.path.getsize(fl) > 446:
+                Symmetric(fl, pub_src, sym_src)
+            else:
+                RSA(fl, pub_src)
+        with open(pub_src, "rb") as pub_file, \
+            open(sym_src, "rb") as sym_file:
                 public_key = serialization.load_pem_public_key(
-                    public_key_file.read(),
+                    pub_file.read(),
                     backend=default_backend()
                 )
-                symmetric_key_data = symmetric_key_file.read()
+                symmetric_key_data = sym_file.read()
         encrypted_key = public_key.encrypt(
             symmetric_key_data,
             padding.OAEP(
@@ -96,5 +81,5 @@ def rsa_enc(target_file_raw, save_folder):
                 label = None
                 )
             )
-        with open(symmetric_key_source, "wb") as crypto_key_file:
+        with open(sym_src, "wb") as crypto_key_file:
             crypto_key_file.write(encrypted_key)
