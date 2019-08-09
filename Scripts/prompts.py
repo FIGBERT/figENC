@@ -29,6 +29,12 @@ def password_error(one, two):
     )
 
 def file_access_error(broken_paths):
+    """Raise an error informing the user that some files aren't
+    accessible by figENC.
+
+    Keyword arguments:
+    broken_paths -- a string with newlines seperating filepaths
+    """
     messagebox.showwarning(
         "Filepath Access Failure",
         (
@@ -38,6 +44,12 @@ def file_access_error(broken_paths):
     )
 
 def key_dir_error(folder):
+    """Raise an error informing the user that the key directory isn't
+    accessible by figENC.
+
+    Keyword arguments:
+    folder -- a directory filepath string
+    """
     messagebox.showwarning(
         "Directory Access Failure",
         (
@@ -48,6 +60,12 @@ def key_dir_error(folder):
     )
 
 def missing_keys(folder):
+    """Raise an error informing the user that some keys are missing
+    from the passed directory
+
+    Keyword arguments:
+    folder -- a directory filepath string
+    """
     messagebox.showwarning(
         "Directory Missing Keys",
         (

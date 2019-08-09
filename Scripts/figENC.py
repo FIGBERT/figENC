@@ -1,4 +1,4 @@
-import sys, json
+import sys, json, getpass
 import tkinter as tk
 from tkinter import filedialog
 from random import choice
@@ -520,8 +520,8 @@ class App():
         self.settings_window.mainloop()
 
     def launch_app(self, root):
-        """Deiconifies the passed root window, destroys the launcher
-        window and updates the frame
+        """Deiconify the passed root window, destroy the launcher
+        window and update the frame
         
         Keyword arguments:
         root -- the main app window
@@ -819,9 +819,9 @@ class App():
             dec_manager(target_files, key_dir, passkey)
         elif mode == "weak_dec" and check.weak_dec(target_files, key_dir):
             dec_manager(target_files, key_dir, passkey)
-        elif mode == "just_key" and check.key(key_dir):
+        elif mode == "just_key" and check.key(key_dir, passkey, passcheck):
             key.just_key_manager(self.type_control.get(), key_dir, passkey)
-        elif mode == "weak_key" and check.key(key_dir):
+        elif mode == "weak_key" and check.weak_key(key_dir):
             key.just_key_manager(self.type_control.get(), key_dir, passkey)
 
     def pick_tip(self):
@@ -880,10 +880,20 @@ class App():
             self.show_pass = not self.show_pass
     
     def select_filepaths(self):
+        """Set the cryptofilepath variable to the tuple result of a
+        tkinter filenames filedialog
+        """
         self.crypto_filepaths = filedialog.askopenfilenames()
 
     def select_key_dir(self):
-        self.key_paths = filedialog.askdirectory()
+        """Set the key_paths variable to the string result of a tkinter
+        askdirectory filedialog. If on MacOS, the start directory will
+        be home folder of the current user.
+        """
+        if sys.platform == "darwin":
+            self.key_paths = filedialog.askdirectory(initialdir="/Users/%s"%getpass.getuser())
+        else:
+            self.key_paths = filedialog.askdirectory()
 
 
 if __name__ == "__main__":

@@ -2,6 +2,13 @@ import os, inspect, sys
 import prompts
 
 def password_check(first_pass, second_pass):
+    """Returns `True` is the two passed strings match,
+    `False` otherwise.
+    
+    Keyword arguments:
+    first_pass -- the first password/string
+    second_pass -- the second password/string
+    """
     if first_pass == second_pass:
         return True
     else:
@@ -9,8 +16,8 @@ def password_check(first_pass, second_pass):
 
 
 # def find_path(filename):
-#     """Return the filepath from the filename when running from a
-#     pyinstaller application.
+#     """Return the correct filepath if you are running
+#     figENC as a bundled application
     
 #     Keyword arguments:
 #     filename -- the filename to convert to a filepath
@@ -30,7 +37,12 @@ def password_check(first_pass, second_pass):
 
 
 def find_path(file):
-        """Return the correct filename if you are running it as a script"""
+        """Return the correct filepath if you are running
+        figENC as a script
+
+        Keyword arguments:
+        file -- the filename to convert to a filepath
+        """
         return os.path.dirname(
             os.path.abspath(
                 inspect.getfile(
@@ -41,6 +53,16 @@ def find_path(file):
 
 
 def key_enc(files, pass1, pass2, key_dir):
+    """Return `True` if all of the conditions are valid
+    for fresh-key passworded encryption. Otherwise, return
+    `False` and prompt the user of the errors.
+
+    Keyword arguments:
+    files -- a tuple of filepaths
+    pass1 -- the first password
+    pass2 -- the second password confirmation
+    key_dir -- the directory where the keys are to be saved
+    """
     broken_paths = ""
     for fl in files:
         if not os.access(fl, os.W_OK):
@@ -68,6 +90,14 @@ def key_enc(files, pass1, pass2, key_dir):
 
 
 def weak_key_enc(files, key_dir):
+    """Return `True` if all of the conditions are valid
+    for fresh-key passwordless encryption. Otherwise, return
+    `False` and prompt the user of the errors.
+
+    Keyword arguments:
+    files -- a tuple of filepaths
+    key_dir -- the directory where the keys are to be saved
+    """
     broken_paths = ""
     for fl in files:
         if not os.access(fl, os.W_OK):
@@ -92,6 +122,14 @@ def weak_key_enc(files, key_dir):
 
 
 def enc(files, key_dir):
+    """Return `True` if all of the conditions are valid
+    for generated key encryption. Otherwise, return
+    `False` and prompt the user of the errors.
+
+    Keyword arguments:
+    files -- a tuple of filepaths
+    key_dir -- the directory where the keys are located
+    """
     broken_paths = ""
     rsa = True
     for fl in files:
@@ -111,7 +149,40 @@ def enc(files, key_dir):
             prompts.missing_keys(key_dir)
 
 
-def key(key_dir):
+def key(key_dir, pass1, pass2):
+    """Return `True` if all of the conditions are valid
+    for generating passworded keys. Otherwise, return
+    `False` and prompt the user of the errors.
+
+    Keyword arguments:
+    key_dir -- the directory where are to be saved
+    pass1 -- the first password
+    pass2 -- the second confirmation password
+    """
+    key_dir_access = True if os.access(key_dir, os.W_OK) else False
+    password_match = password_check(pass1, pass2)
+    priv = key_dir + "/private_key.pem"
+    pub = key_dir + "/public_key.pem"
+    sym = key_dir + "/symmetric_key.key"
+    write_key = prompts.overwrite_prompt() if os.path.exists(priv) or os.path.exists(pub) or os.path.exists(sym) else True
+    if key_dir_access and write_key and password_match:
+        return True
+    else:
+        if not key_dir_access:
+            prompts.key_dir_error(key_dir)
+        if not password_match:
+            prompts.password_error(pass1, pass2)
+        return False
+
+
+def weak_key(key_dir):
+    """Return `True` if all of the conditions are valid
+    for generating passwordless keys. Otherwise, return
+    `False` and prompt the user of the errors.
+
+    Keyword arguments:
+    key_dir -- the directory where are to be saved
+    """
     key_dir_access = True if os.access(key_dir, os.W_OK) else False
     priv = key_dir + "/private_key.pem"
     pub = key_dir + "/public_key.pem"
@@ -126,6 +197,16 @@ def key(key_dir):
 
 
 def dec(files, pass1, pass2, key_dir):
+    """Return `True` if all of the conditions are valid
+    for passworded decryption. Otherwise, return
+    `False` and prompt the user of the errors.
+
+    Keyword arguments:
+    files -- a tuple of filepaths
+    pass1 -- the first password
+    pass2 -- the second confirmation password
+    key_dir -- the directory where the keys are located
+    """
     broken_paths = ""
     rsa = True
     for fl in files:
@@ -155,6 +236,14 @@ def dec(files, pass1, pass2, key_dir):
     
 
 def weak_dec(files, key_dir):
+    """Return `True` if all of the conditions are valid
+    for passwordless decryption. Otherwise, return
+    `False` and prompt the user of the errors.
+
+    Keyword arguments:
+    files -- a tuple of filepaths
+    key_dir -- the directory where the keys are located
+    """
     broken_paths = ""
     rsa = True
     for fl in files:

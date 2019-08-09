@@ -7,6 +7,13 @@ from cryptography.fernet import Fernet
 
 
 def rsa_dec(file, priv, passkey):
+    """Decrypt the passed file with a private key
+    
+    Keyword arguments:
+    file -- the filepath to file to decrypt
+    priv -- the filepath to the private key
+    passkey -- the password to the private key (OPTIONAL)
+    """
     with open(priv, "rb") as priv_src, \
             open(file, "rb") as read_file:
         private_key = serialization.load_pem_private_key(
@@ -27,6 +34,14 @@ def rsa_dec(file, priv, passkey):
         write_file.write(original_message)
 
 def mixed_dec(file, priv, sym, passkey):
+    """Decrypt the passed file with an encrypted symmetric key
+    
+    Keyword arguments:
+    file -- the filepath to file to decrypt
+    priv -- the filepath to the private key
+    sym -- the filepath to the symmetric key
+    passkey -- the password to the private key (OPTIONAL)
+    """
     with open(priv, "rb") as priv_src, \
             open(sym, "rb") as sym_src, \
             open(file, "rb") as read_file:
@@ -55,6 +70,13 @@ def mixed_dec(file, priv, sym, passkey):
 
 
 def dec_manager(files, key_dir, passkey):
+    """Decrypt all of the passed files based on their respective tags
+    
+    Keyword arguments:
+    files -- a tuple of filepaths to decrypt
+    key_dir -- the directory where the keys are located
+    passkey -- the password to the private key (OPTIONAL)
+    """
     priv = key_dir + "/private_key.pem"
     sym = key_dir + "/symmetric_key.key"
     rsa = True

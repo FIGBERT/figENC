@@ -8,6 +8,12 @@ from cryptography.fernet import Fernet
 
 
 def RSA(target_file, public_key_source):
+    """Encrypts the passed file with the passed RSA public key
+    
+    Keyword arguments:
+    target_file -- the filepath to the file to be encrypted
+    public_key_source -- the filepath to the public key
+    """
     with open(public_key_source, "rb") as public_key_file, \
         open(target_file) as read_file:
             public_key = serialization.load_pem_public_key(
@@ -30,7 +36,13 @@ def RSA(target_file, public_key_source):
         write_file.write(data)
 
 
-def Symmetric(target_file, public_key_source, symmetric_key_source):
+def Symmetric(target_file, symmetric_key_source):
+    """Encrypts the passed file with the passed symmetric key
+    
+    Keyword arguments:
+    target_file -- the filepath to the file to be encrypted
+    symmetric_key_source -- the filepath to the symmetric key
+    """
     with open(symmetric_key_source, "rb") as symmetric_key_file:
         symmetric_key_data = symmetric_key_file.read()
     symmetric_key = Fernet(symmetric_key_data)
@@ -63,7 +75,7 @@ def enc_manager(target_files, save_folder):
     else:
         for fl in target_files:
             if os.path.getsize(fl) > 446:
-                Symmetric(fl, pub_src, sym_src)
+                Symmetric(fl, sym_src)
             else:
                 RSA(fl, pub_src)
         with open(pub_src, "rb") as pub_file, \

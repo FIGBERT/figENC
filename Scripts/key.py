@@ -79,6 +79,14 @@ def key_manager(target_files, save_folder, passkey):
         )
 
 def just_key_manager(mode, save_folder, passkey):
+    """Call either the `rsa_key` function or the `mixed_key`
+    function, according to passed mode.
+    
+    Keyword arguments:
+    mode -- either 0 (RSA) or 1 (Mixed)
+    save_folder -- the directory to save the keys
+    passkey -- the password to enhance the RSA encryption (OPTIONAL)
+    """
     rsa = True if mode == 0 else False
     pub_src = save_folder + "/public_key.pem"
     priv_src = save_folder + "/private_key.pem"

@@ -2,6 +2,11 @@ import os, inspect, requests, sys
 from check import find_path
 
 def update_available():
+    """Check against the current app version for
+    update availability. Return "available" if there's
+    an update available, "updated" if there's none available,
+    and "offline" if figENC can't establish a connection.
+    """
     try:
         git_import = requests.get(
             ("https://raw.githubusercontent.com/therealFIGBERT/figENC/"
