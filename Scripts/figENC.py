@@ -213,13 +213,6 @@ class App():
             bg="#1A181C",
             fg="#F2DAFF"
         )
-        self.file_instructions = tk.Label(
-            self.file_frame,
-            text="Separate filepaths with colons (:)",
-            font=("Arial", str(settings["font_size"] - 2)),
-            bg="#1A181C",
-            fg="#B494C7"
-        )
         if sys.platform == "darwin":
             self.file_input = tk.Button(
                 self.file_frame,
@@ -567,7 +560,6 @@ class App():
     def reset(self):
         """Hide all elements of the main app GUI and reset the entered text"""
         self.file_frame.pack_forget()
-        self.file_instructions.pack_forget()
         self.file_label.pack_forget()
         self.file_input.pack_forget()
         self.passcode_frame.pack_forget()
@@ -613,7 +605,6 @@ class App():
             self.file_frame.pack(fill="both")
             self.file_label.config(text="Filepath/s to the file/s to encrypt")
             self.file_label.pack()
-            self.file_instructions.pack()
             self.file_input.pack(fill="x")
             self.passcode_frame.pack(fill="both")
             self.passcode_label.config(text="Set private key passcode")
@@ -652,7 +643,6 @@ class App():
             self.file_frame.pack(fill="both")
             self.file_label.config(text="Filepath/s to the file/s to encrypt")
             self.file_label.pack()
-            self.file_instructions.pack()
             self.file_input.pack(fill="x")
             self.save.pack(fill="both")
             self.save_label.config(text="Save location for keys")
@@ -676,7 +666,6 @@ class App():
             self.file_frame.pack(fill="both")
             self.file_label.config(text="Filepath/s to the file/s to encrypt")
             self.file_label.pack()
-            self.file_instructions.pack()
             self.file_input.pack(fill="x")
             self.save.pack(fill="both")
             self.save_label.config(text="Key location")
@@ -695,7 +684,6 @@ class App():
             self.file_frame.pack(fill="both")
             self.file_label.config(text="Filepath/s to the file/s to decrypt")
             self.file_label.pack()
-            self.file_instructions.pack()
             self.file_input.pack(fill="x")
             self.passcode_frame.pack(fill="both")
             self.passcode_label.config(text="Private key passcode")
@@ -728,7 +716,6 @@ class App():
             self.file_frame.pack(fill="both")
             self.file_label.config(text="Filepath/s to the file/s to decrypt")
             self.file_label.pack()
-            self.file_instructions.pack()
             self.file_input.pack(fill="x")
             self.save.pack(fill="both")
             self.save_label.config(text="Key location")

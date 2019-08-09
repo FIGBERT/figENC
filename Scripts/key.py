@@ -3,6 +3,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.fernet import Fernet
+from prompts import success
 
 
 def rsa_key(pub, priv, passkey):
@@ -95,3 +96,4 @@ def just_key_manager(mode, save_folder, passkey):
         rsa_key(pub_src, priv_src, passkey)
     else:
         mixed_key(pub_src, priv_src, sym_src, passkey)
+    success()

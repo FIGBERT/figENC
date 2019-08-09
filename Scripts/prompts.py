@@ -1,4 +1,5 @@
 from tkinter import messagebox
+from random import choice
 
 
 def overwrite_prompt():
@@ -73,4 +74,24 @@ def missing_keys(folder):
             " files. Please correct and try again.\n\nDirectory provided:"
             "\n%s"%folder
         )
+    )
+
+def success():
+    """Inform the user of the processes succesful completion
+    with a fun message/reference.
+    """
+    fun_messages = [
+        "Proceed into cyberspace with confidence.",
+        "*applause*",
+        "Congratulations, prince of darkness.",
+        "Don't delete the .dat file *wink*",
+        "You can remove your hoodie now.",
+        "D*ck pic hidden.",
+        "Time to take over the world.",
+        "Mainframe secured.",
+        "Don't steal my nuts!"
+    ]
+    messagebox.showinfo(
+        "Success",
+        "The operation was complete. %s"%choice(fun_messages)
     )

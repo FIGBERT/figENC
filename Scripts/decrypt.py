@@ -4,6 +4,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.fernet import Fernet
+from prompts import success
 
 
 def rsa_dec(file, priv, passkey):
@@ -110,3 +111,4 @@ def dec_manager(files, key_dir, passkey):
                 return None
         with open(sym, "wb") as sym_src:
             sym_src.write(sym_dec)
+    success()

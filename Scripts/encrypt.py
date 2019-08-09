@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.fernet import Fernet
+from prompts import success
 
 
 def RSA(target_file, public_key_source):
@@ -95,3 +96,4 @@ def enc_manager(target_files, save_folder):
             )
         with open(sym_src, "wb") as crypto_key_file:
             crypto_key_file.write(encrypted_key)
+    success()
