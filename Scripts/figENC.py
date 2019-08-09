@@ -884,6 +884,9 @@ class App():
         tkinter filenames filedialog
         """
         self.crypto_filepaths = filedialog.askopenfilenames()
+        self.file_input.config(
+            text=self.crypto_filepaths[0] if len(self.crypto_filepaths) == 1 else self.crypto_filepaths[0] + "..."
+        )
 
     def select_key_dir(self):
         """Set the key_paths variable to the string result of a tkinter
@@ -894,6 +897,7 @@ class App():
             self.key_paths = filedialog.askdirectory(initialdir="/Users/%s"%getpass.getuser())
         else:
             self.key_paths = filedialog.askdirectory()
+        self.save_input.config(text=self.key_paths)
 
 
 if __name__ == "__main__":
