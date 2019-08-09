@@ -101,7 +101,10 @@ class App():
             )
         self.launch_button.pack(side=tk.LEFT)
         self.settings_button.pack(side=tk.RIGHT)
-        
+        self.launcher.protocol(
+            "WM_DELETE_WINDOW",
+            lambda: self.full_shutdown(self.launcher, root)
+        )
         root.mainloop()
 
     def main_app(self, root, settings):
@@ -346,7 +349,7 @@ class App():
             self.type_button_frame,
             text="RSA",
             bg="#1A181C",
-            fg="#F2DAFF",
+            fg="#F2DAFF" if sys.platform == "darwin" else "#B494C7",
             variable=self.type_control,
             value=0
         )
@@ -354,7 +357,7 @@ class App():
             self.type_button_frame,
             text="Mixed",
             bg="#1A181C",
-            fg="#F2DAFF",
+            fg="#F2DAFF" if sys.platform == "darwin" else "#B494C7",
             variable=self.type_control,
             value=1
         )
@@ -445,7 +448,22 @@ class App():
             *self.font_options,
             command=self.modify_font
         )
-        self.font_menu.config(bg="#1A181C", fg="#643181")
+        if sys.platform == "darwin":
+            self.font_menu.config(bg="#1A181C", fg="#643181")
+        else:
+            self.font_menu.config(
+                bg="#1A181C",
+                fg="#643181",
+                highlightbackground="#643181",
+                activebackground="#F2DAFF",
+                activeforeground="#1A181C"
+            )
+            self.font_menu["menu"].config(
+                bg="#1A181C",
+                fg="#643181",
+                activebackground="#643181",
+                activeforeground="#F2DAFF"
+            )
         self.font_menu.pack(side=tk.LEFT)
         self.dim_frame = tk.Frame(self.frame, bg="#1A181C")
         self.dim_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
@@ -479,7 +497,22 @@ class App():
             *self.dim_options,
             command=self.modify_dim
         )
-        self.dim_menu.config(bg="#1A181C", fg="#643181")
+        if sys.platform == "darwin":
+            self.dim_menu.config(bg="#1A181C", fg="#643181")
+        else:
+            self.dim_menu.config(
+                bg="#1A181C",
+                fg="#643181",
+                highlightbackground="#643181",
+                activebackground="#F2DAFF",
+                activeforeground="#1A181C"
+            )
+            self.dim_menu["menu"].config(
+                bg="#1A181C",
+                fg="#643181",
+                activebackground="#643181",
+                activeforeground="#F2DAFF"
+            )
         self.dim_menu.pack(side=tk.LEFT)
         self.update_frame = tk.Frame(self.frame, bg="#1A181C")
         self.update_frame.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
@@ -835,11 +868,21 @@ class App():
         """Destroy the settings toplevel and deiconify the root window
         
         Keyword arguments:
-        settings_window -- the window of the app to destory
+        settings_window -- the window of the app to destroy
         root -- the window of the app to deiconify()
         """
         settings_window.destroy()
         root.deiconify()
+
+    def full_shutdown(self, launcher_window, root):
+        """Destroy the launcher window and the root window
+        
+        Keyword arguments:
+        launcher_window -- the window of the app to destroy
+        root -- another app to destroy
+        """
+        launcher_window.destroy()
+        root.destroy()
 
     def modify_font(self, value):
         """Change the value of the font_size key in the self.settings variable
