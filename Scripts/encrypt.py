@@ -15,15 +15,18 @@ def RSA(target_file, public_key_source):
     target_file -- the filepath to the file to be encrypted
     public_key_source -- the filepath to the public key
     """
-    with open(public_key_source, "rb") as public_key_file, \
-        open(target_file) as read_file:
+    with open(public_key_source, "rb") as public_key_file:
             public_key = serialization.load_pem_public_key(
                 public_key_file.read(),
                 backend=default_backend()
             )
+    try:
+        with open(target_file) as read_file:
             file_data = read_file.read()
-    if not isinstance(file_data, bytes):
         file_data = bytes(file_data, "utf-8")
+    except UnicodeDecodeError:
+        with open(target_file, "rb") as read_file:
+            file_data = read_file.read()
     data = public_key.encrypt(
         file_data,
         padding.OAEP(
