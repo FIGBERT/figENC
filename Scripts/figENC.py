@@ -85,16 +85,16 @@ class App():
         else:
             self.launch_button = tk.Button(
                 self.button_frame,
-                fg="#B494C7",
-                bg="#643181",
+                fg="#643181",
+                bg="#8A8A8A",
                 text="Launch App",
                 font=("Arial", "10"),
                 command=lambda: self.launch_app(root)
             )
             self.settings_button = tk.Button(
                 self.button_frame,
-                fg="#B494C7",
-                bg="#643181",
+                fg="#643181",
+                bg="#8A8A8A",
                 text="Settings",
                 font=("Arial", "10"),
                 command=lambda: self.open_settings(self.launcher)
@@ -198,8 +198,8 @@ class App():
                 self.action,
                 text="Begin Process",
                 font=("Arial", str(settings["font_size"] - 2)),
-                bg="#643181",
-                fg="#B494C7",
+                bg="#8A8A8A",
+                fg="#643181",
                 command=lambda: self.setup(self.action_list.curselection())
             )
         self.submit_action.pack()
@@ -228,8 +228,8 @@ class App():
                 self.file_frame,
                 text="Select File/s",
                 font=("Arial", str(settings["font_size"] - 2)),
-                bg="#643181",
-                fg="#B494C7",
+                bg="#8A8A8A",
+                fg="#643181",
                 command=self.select_filepaths
             )
         self.passcode_frame = tk.Frame(self.step_two, bg="#1A181C", pady=8)
@@ -315,8 +315,8 @@ class App():
                 self.save,
                 text="Select Directory",
                 font=("Arial", str(settings["font_size"] - 2)),
-                bg="#643181",
-                fg="#B494C7",
+                bg="#8A8A8A",
+                fg="#643181",
                 command=self.select_key_dir
             )
         self.type_frame = tk.Frame(self.step_two, bg="#1A181C", pady=8)
@@ -375,8 +375,8 @@ class App():
                 self.step_two,
                 text="If you see this, the app broke",
                 font=("Arial", str(settings["font_size"] - 2)),
-                bg="#643181",
-                fg="#B494C7",
+                bg="#8A8A8A",
+                fg="#643181",
                 command=lambda: self.go(
                     mode=self.crypto_mode,
                     key_dir=self.key_paths,
