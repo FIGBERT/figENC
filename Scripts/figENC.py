@@ -28,83 +28,7 @@ class App():
             settings = json.load(settings_file)
         root.withdraw()
 
-        self.launcher = tk.Toplevel()
-        self.launcher.wm_title("figENC")
-        self.canvas = tk.Canvas(
-            self.launcher,
-            height=settings["win_height"]/6,
-            width=settings["win_width"]/1.5
-        )
-        self.canvas.pack(fill=tk.BOTH, expand=True)
-        self.frame = tk.Frame(self.canvas, bg="#1A181C")
-        self.frame.place(relwidth=1, relheight=1)
-        self.header = tk.Label(
-            self.frame,
-            text="Loading application...",
-            font=("Arial", (
-                settings["font_size"]-2 if settings["font_size"]-2 > 0 else 2
-                )
-            ),
-            bg="#1A181C",
-            fg="#F2DAFF",
-            pady=5
-        )
-        self.header.pack(side=tk.TOP)
-        self.subheader = tk.Label(
-            self.frame,
-            text=self.pick_tip(),
-            font=("Arial", (
-                settings["font_size"]-4 if settings["font_size"]-4 > 0 else 1
-                )
-            ),
-            bg="#1A181C",
-            fg="#B494C7"
-        )
-        self.subheader.pack(side=tk.TOP)
-        self.button_frame = tk.Frame(self.frame, bg="#1A181C", pady=5)
-        self.button_frame.pack(side=tk.TOP)
-        if sys.platform == "darwin":
-            self.launch_button = tk.Button(
-                self.button_frame,
-                fg="#643181",
-                text="Launch App",
-                font=("Arial", "10"),
-                highlightthickness=5,
-                highlightbackground="#1A181C",
-                command=lambda: self.launch_app(root)
-            )
-            self.settings_button = tk.Button(
-                self.button_frame,
-                fg="#643181",
-                text="Settings",
-                font=("Arial", "10"),
-                highlightbackground="#1A181C",
-                highlightthickness=5,
-                command=lambda: self.open_settings(self.launcher)
-            )
-        else:
-            self.launch_button = tk.Button(
-                self.button_frame,
-                fg="#643181",
-                bg="#8A8A8A",
-                text="Launch App",
-                font=("Arial", "10"),
-                command=lambda: self.launch_app(root)
-            )
-            self.settings_button = tk.Button(
-                self.button_frame,
-                fg="#643181",
-                bg="#8A8A8A",
-                text="Settings",
-                font=("Arial", "10"),
-                command=lambda: self.open_settings(self.launcher)
-            )
-        self.launch_button.pack(side=tk.LEFT)
-        self.settings_button.pack(side=tk.RIGHT)
-        self.launcher.protocol(
-            "WM_DELETE_WINDOW",
-            lambda: self.full_shutdown(self.launcher, root)
-        )
+        self.launcher_test(settings)
         root.mainloop()
 
     def main_app(self, root, settings):
@@ -540,9 +464,88 @@ class App():
         self.update_status.pack(side=tk.LEFT)
         self.settings_window.protocol(
             "WM_DELETE_WINDOW",
-            lambda: self.close_settings(self.settings_window, root)
+            lambda: self.close_settings(self.settings_window)
         )
         self.settings_window.mainloop()
+
+    def launcher_test(self, settings):
+        self.launcher = tk.Toplevel()
+        self.launcher.wm_title("figENC")
+        self.canvas = tk.Canvas(
+            self.launcher,
+            height=settings["win_height"]/6,
+            width=settings["win_width"]/1.5
+        )
+        self.canvas.pack(fill=tk.BOTH, expand=True)
+        self.frame = tk.Frame(self.canvas, bg="#1A181C")
+        self.frame.place(relwidth=1, relheight=1)
+        self.header = tk.Label(
+            self.frame,
+            text="Loading application...",
+            font=("Arial", (
+                settings["font_size"]-2 if settings["font_size"]-2 > 0 else 2
+                )
+            ),
+            bg="#1A181C",
+            fg="#F2DAFF",
+            pady=5
+        )
+        self.header.pack(side=tk.TOP)
+        self.subheader = tk.Label(
+            self.frame,
+            text=self.pick_tip(),
+            font=("Arial", (
+                settings["font_size"]-4 if settings["font_size"]-4 > 0 else 1
+                )
+            ),
+            bg="#1A181C",
+            fg="#B494C7"
+        )
+        self.subheader.pack(side=tk.TOP)
+        self.button_frame = tk.Frame(self.frame, bg="#1A181C", pady=5)
+        self.button_frame.pack(side=tk.TOP)
+        if sys.platform == "darwin":
+            self.launch_button = tk.Button(
+                self.button_frame,
+                fg="#643181",
+                text="Launch App",
+                font=("Arial", "10"),
+                highlightthickness=5,
+                highlightbackground="#1A181C",
+                command=lambda: self.launch_app(root)
+            )
+            self.settings_button = tk.Button(
+                self.button_frame,
+                fg="#643181",
+                text="Settings",
+                font=("Arial", "10"),
+                highlightbackground="#1A181C",
+                highlightthickness=5,
+                command=lambda: self.open_settings(self.launcher)
+            )
+        else:
+            self.launch_button = tk.Button(
+                self.button_frame,
+                fg="#643181",
+                bg="#8A8A8A",
+                text="Launch App",
+                font=("Arial", "10"),
+                command=lambda: self.launch_app(root)
+            )
+            self.settings_button = tk.Button(
+                self.button_frame,
+                fg="#643181",
+                bg="#8A8A8A",
+                text="Settings",
+                font=("Arial", "10"),
+                command=lambda: self.open_settings(self.launcher)
+            )
+        self.launch_button.pack(side=tk.LEFT)
+        self.settings_button.pack(side=tk.RIGHT)
+        self.launcher.protocol(
+            "WM_DELETE_WINDOW",
+            lambda: self.full_shutdown(self.launcher, root)
+        )
 
     def launch_app(self, root):
         """Deiconify the passed root window, destroy the launcher
@@ -852,7 +855,7 @@ class App():
         self.tip = "Tip: " + choice(self.tips)
         return self.tip
 
-    def close_settings(self, settings_window, root):
+    def close_settings(self, settings_window):
         """Destroy the settings toplevel and deiconify the root window
         
         Keyword arguments:
@@ -860,7 +863,9 @@ class App():
         root -- the window of the app to deiconify()
         """
         settings_window.destroy()
-        root.deiconify()
+        with open(self.settings_file) as settings_file:
+            settings = json.load(settings_file)
+        self.launcher_test(settings)
 
     def full_shutdown(self, launcher_window, root):
         """Destroy the launcher window and the root window
