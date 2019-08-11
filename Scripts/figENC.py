@@ -26,7 +26,7 @@ class App():
         self.tips_file = find_path("tips.json")
         with open(self.settings_file) as settings_file:
             settings = json.load(settings_file)
-        self.main_app(root, settings)
+        root.withdraw()
 
         self.launcher = tk.Toplevel()
         self.launcher.wm_title("figENC")
@@ -385,7 +385,6 @@ class App():
                     passcheck=self.confirm_input.get()
                 )
             )
-        root.withdraw()
 
     def open_settings(self, root):
         """Open the settings window and temporarily minimize the root window
@@ -552,9 +551,11 @@ class App():
         Keyword arguments:
         root -- the main app window
         """
+        with open(self.settings_file) as settings_file:
+            settings = json.load(settings_file)
+        self.main_app(root, settings)
         root.deiconify()
         self.launcher.destroy()
-        self.frame.update()
 
 
     def reset(self):
