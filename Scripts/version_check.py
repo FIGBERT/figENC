@@ -1,4 +1,4 @@
-import os, inspect, requests, sys
+import requests, sys
 from check import find_path
 
 def update_available():
@@ -8,12 +8,19 @@ def update_available():
     and "offline" if figENC can't establish a connection.
     """
     try:
-        git_import = requests.get(
-            ("https://raw.githubusercontent.com/therealFIGBERT/figENC/"
-            "master/Executables/figENC_MacOS/figENC.app/Contents/Resources"
-            "/version.txt"
-            )
-        ).text
+        if sys.platform == "darwin":
+            git_import = requests.get(
+                ("https://raw.githubusercontent.com/therealFIGBERT/figENC/"
+                "master/Executables/figENC_MacOS/figENC.app/Contents/Resources"
+                "/version.txt"
+                )
+            ).text
+        else:
+            git_import = requests.get(
+                ("https://raw.githubusercontent.com/therealFIGBERT/figENC/"
+                "master/Executables/figENC_Windows/version.txt"
+                )
+            ).text
     except requests.exceptions.ConnectionError:
         return "offline"
     version_file = find_path("version.txt")

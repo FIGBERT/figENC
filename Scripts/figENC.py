@@ -28,7 +28,7 @@ class App():
             settings = json.load(settings_file)
         root.withdraw()
 
-        self.launcher_test(settings)
+        self.launcher(settings)
         root.mainloop()
 
     def main_app(self, root, settings):
@@ -52,7 +52,7 @@ class App():
             self.frame,
             text="figENC",
             justify=tk.CENTER,
-            font=("Arial", str(settings["font_size"] + 6)),
+            font=("Arial", settings["font_size"] + 6),
             bg="#643181",
             fg="#F2DAFF",
             pady=2
@@ -61,7 +61,7 @@ class App():
             self.frame,
             text="Industry leading encryption by FIGBERT",
             justify=tk.CENTER,
-            font=("Arial", str(settings["font_size"])),
+            font=("Arial", settings["font_size"]),
             bg="#643181",
             fg="#F2DAFF",
             pady=2
@@ -74,7 +74,7 @@ class App():
             self.action,
             text="Action:",
             justify=tk.LEFT,
-            font=("Arial", str(settings["font_size"])),
+            font=("Arial", settings["font_size"]),
             bg="#1A181C",
             fg="#F2DAFF",
         )
@@ -82,7 +82,7 @@ class App():
         self.action_list = tk.Listbox(
             self.action,
             justify=tk.CENTER,
-            font=("Arial", str(settings["font_size"] - 2)),
+            font=("Arial", settings["font_size"] - 2),
             bg="#1A181C",
             fg="#ACA0B2",
             selectbackground="#643181",
@@ -111,7 +111,7 @@ class App():
             self.submit_action = tk.Button(
                 self.action,
                 text="Begin Process",
-                font=("Arial", str(settings["font_size"] - 2)),
+                font=("Arial", settings["font_size"] - 2),
                 fg="#643181",
                 highlightthickness=0,
                 highlightbackground="#1A181C",
@@ -121,7 +121,7 @@ class App():
             self.submit_action = tk.Button(
                 self.action,
                 text="Begin Process",
-                font=("Arial", str(settings["font_size"] - 2)),
+                font=("Arial", settings["font_size"] - 2),
                 bg="#8A8A8A",
                 fg="#643181",
                 command=lambda: self.setup(self.action_list.curselection())
@@ -133,7 +133,7 @@ class App():
         self.file_label = tk.Label(
             self.file_frame,
             text="If you see this, the app broke",
-            font=("Arial", str(settings["font_size"])),
+            font=("Arial", settings["font_size"]),
             bg="#1A181C",
             fg="#F2DAFF"
         )
@@ -141,7 +141,7 @@ class App():
             self.file_input = tk.Button(
                 self.file_frame,
                 text="Select File/s",
-                font=("Arial", str(settings["font_size"] - 2)),
+                font=("Arial", settings["font_size"] - 2),
                 fg="#643181",
                 highlightthickness=0,
                 highlightbackground="#1A181C",
@@ -151,7 +151,7 @@ class App():
             self.file_input = tk.Button(
                 self.file_frame,
                 text="Select File/s",
-                font=("Arial", str(settings["font_size"] - 2)),
+                font=("Arial", settings["font_size"] - 2),
                 bg="#8A8A8A",
                 fg="#643181",
                 command=self.select_filepaths
@@ -160,20 +160,20 @@ class App():
         self.passcode_label = tk.Label(
             self.passcode_frame,
             text="If you see this, the app broke",
-            font=("Arial", str(settings["font_size"])),
+            font=("Arial", settings["font_size"]),
             bg="#1A181C",
             fg="#F2DAFF"
         )
         self.passcode_instructions = tk.Label(
             self.passcode_frame,
             text="If you see this, the app broke",
-            font=("Arial", str(settings["font_size"] - 2)),
+            font=("Arial", settings["font_size"] - 2),
             bg="#1A181C",
             fg="#B494C7"
         )
         self.passcode_input = tk.Entry(
             self.passcode_frame,
-            font=("Arial", str(settings["font_size"] - 2)),
+            font=("Arial", settings["font_size"] - 2),
             justify=tk.CENTER,
             textvariable=tk.StringVar,
             show="*",
@@ -186,20 +186,20 @@ class App():
         self.confirm_label = tk.Label(
             self.passcode_frame,
             text="Confirm passkey",
-            font=("Arial", str(settings["font_size"])),
+            font=("Arial", settings["font_size"]),
             bg="#1A181C",
             fg="#F2DAFF"
         )
         self.confirm_instructions = tk.Label(
             self.passcode_frame,
             text="Re-enter the provided passkey",
-            font=("Arial", str(settings["font_size"] - 2)),
+            font=("Arial", settings["font_size"] - 2),
             bg="#1A181C",
             fg="#B494C7"
         )
         self.confirm_input = tk.Entry(
             self.passcode_frame,
-            font=("Arial", str(settings["font_size"] - 2)),
+            font=("Arial", settings["font_size"] - 2),
             justify=tk.CENTER,
             textvariable=tk.StringVar,
             show="*",
@@ -213,14 +213,14 @@ class App():
         self.save_label = tk.Label(
             self.save,
             text="Save location for keys",
-            font=("Arial", str(settings["font_size"])),
+            font=("Arial", settings["font_size"]),
             bg="#1A181C",
             fg="#F2DAFF"
         )
         self.save_instructions = tk.Label(
             self.save,
             text="If you see this, the app broke",
-            font=("Arial", str(settings["font_size"] - 2)),
+            font=("Arial", settings["font_size"] - 2),
             bg="#1A181C",
             fg="#B494C7"
         )
@@ -228,7 +228,7 @@ class App():
             self.save_input = tk.Button(
                 self.save,
                 text="Select Directory",
-                font=("Arial", str(settings["font_size"] - 2)),
+                font=("Arial", settings["font_size"] - 2),
                 fg="#643181",
                 highlightthickness=0,
                 highlightbackground="#1A181C",
@@ -238,7 +238,7 @@ class App():
             self.save_input = tk.Button(
                 self.save,
                 text="Select Directory",
-                font=("Arial", str(settings["font_size"] - 2)),
+                font=("Arial", settings["font_size"] - 2),
                 bg="#8A8A8A",
                 fg="#643181",
                 command=self.select_key_dir
@@ -247,7 +247,7 @@ class App():
         self.type_label = tk.Label(
             self.type_frame,
             text="Type of keys to generate",
-            font=("Arial", str(settings["font_size"])),
+            font=("Arial", settings["font_size"]),
             bg="#1A181C",
             fg="#F2DAFF"
         )
@@ -256,7 +256,7 @@ class App():
             text=("Selecting RSA will generate a public and private key,\nbut"
             " selecting Mixed will also generate a symmetric key."
             ),
-            font=("Arial", str(settings["font_size"] - 2)),
+            font=("Arial", settings["font_size"] - 2),
             bg="#1A181C",
             fg="#B494C7"
         )
@@ -282,7 +282,7 @@ class App():
             self.submit = tk.Button(
                 self.step_two,
                 text="If you see this, the app broke",
-                font=("Arial", str(settings["font_size"] - 2)),
+                font=("Arial", settings["font_size"] - 2),
                 fg="#643181",
                 highlightbackground="#1A181C",
                 highlightthickness=0,
@@ -298,7 +298,7 @@ class App():
             self.submit = tk.Button(
                 self.step_two,
                 text="If you see this, the app broke",
-                font=("Arial", str(settings["font_size"] - 2)),
+                font=("Arial", settings["font_size"] - 2),
                 bg="#8A8A8A",
                 fg="#643181",
                 command=lambda: self.go(
@@ -394,19 +394,21 @@ class App():
         )
         self.dim_label.pack(side=tk.LEFT)
         self.dim_options = [
-            "500x500",
-            "700x700",
-            "900x900",
-            "1000x1000",
-            "1200x1200",
-            "1500x1500"
+            "Small",
+            "Medium (Default)",
+            "Large",
+            "Extra Large"
         ]
+        if self.settings["win_width"] == 500:
+            self.dim_start_value = "Small"
+        elif self.settings["win_width"] == 1000:
+            self.dim_start_value = "Large"
+        elif self.settings["win_width"] == 1200:
+            self.dim_start_value = "Extra Large"
+        else:
+            self.dim_start_value = "Medium (Default)"
         self.dim_dropdown = tk.StringVar()
-        self.dim_dropdown.set(
-            str(self.settings["win_width"])
-            + "x"
-            + str(self.settings["win_height"])
-        )
+        self.dim_dropdown.set(self.dim_start_value)
         self.dim_menu = tk.OptionMenu(
             self.dim_frame,
             self.dim_dropdown,
@@ -462,17 +464,43 @@ class App():
             pady=2
         )
         self.update_status.pack(side=tk.LEFT)
+        self.save_frame = tk.Frame(self.frame, bg="#1A181C", pady=5, padx=5)
+        self.save_frame.pack(side=tk.BOTTOM, fill=tk.BOTH)
+        if sys.platform == "darwin":
+            self.save_button = tk.Button(
+                self.save_frame,
+                fg="#643181",
+                text="Save",
+                font=("Arial", self.settings["font_size"] - 2),
+                highlightthickness=5,
+                highlightbackground="#1A181C",
+                padx=10,
+                pady=2,
+                command=lambda: self.close_settings(self.settings_window)
+            )
+        else:
+            self.save_button = tk.Button(
+                self.save_frame,
+                fg="#643181",
+                bg="#8A8A8A",
+                text="Save",
+                font=("Arial", self.settings["font_size"] - 2),
+                padx=10,
+                pady=2,
+                command=lambda: self.close_settings(self.settings_window)
+            )
+        self.save_button.pack(side=tk.LEFT)
         self.settings_window.protocol(
             "WM_DELETE_WINDOW",
             lambda: self.close_settings(self.settings_window)
         )
         self.settings_window.mainloop()
 
-    def launcher_test(self, settings):
-        self.launcher = tk.Toplevel()
-        self.launcher.wm_title("figENC")
+    def launcher(self, settings):
+        self.launcher_window = tk.Toplevel()
+        self.launcher_window.wm_title("figENC")
         self.canvas = tk.Canvas(
-            self.launcher,
+            self.launcher_window,
             height=settings["win_height"]/6,
             width=settings["win_width"]/1.5
         )
@@ -494,10 +522,7 @@ class App():
         self.subheader = tk.Label(
             self.frame,
             text=self.pick_tip(),
-            font=("Arial", (
-                settings["font_size"]-4 if settings["font_size"]-4 > 0 else 1
-                )
-            ),
+            font=("Arial", settings["font_size"]-4),
             bg="#1A181C",
             fg="#B494C7"
         )
@@ -509,7 +534,7 @@ class App():
                 self.button_frame,
                 fg="#643181",
                 text="Launch App",
-                font=("Arial", "10"),
+                font=("Arial", settings["font_size"]-6),
                 highlightthickness=5,
                 highlightbackground="#1A181C",
                 command=lambda: self.launch_app(root)
@@ -518,10 +543,10 @@ class App():
                 self.button_frame,
                 fg="#643181",
                 text="Settings",
-                font=("Arial", "10"),
+                font=("Arial", settings["font_size"]-6),
                 highlightbackground="#1A181C",
                 highlightthickness=5,
-                command=lambda: self.open_settings(self.launcher)
+                command=lambda: self.open_settings(self.launcher_window)
             )
         else:
             self.launch_button = tk.Button(
@@ -529,7 +554,7 @@ class App():
                 fg="#643181",
                 bg="#8A8A8A",
                 text="Launch App",
-                font=("Arial", "10"),
+                font=("Arial", settings["font_size"]-6),
                 command=lambda: self.launch_app(root)
             )
             self.settings_button = tk.Button(
@@ -537,14 +562,14 @@ class App():
                 fg="#643181",
                 bg="#8A8A8A",
                 text="Settings",
-                font=("Arial", "10"),
-                command=lambda: self.open_settings(self.launcher)
+                font=("Arial", settings["font_size"]-6),
+                command=lambda: self.open_settings(self.launcher_window)
             )
         self.launch_button.pack(side=tk.LEFT)
         self.settings_button.pack(side=tk.RIGHT)
-        self.launcher.protocol(
+        self.launcher_window.protocol(
             "WM_DELETE_WINDOW",
-            lambda: self.full_shutdown(self.launcher, root)
+            lambda: self.full_shutdown(self.launcher_window, root)
         )
 
     def launch_app(self, root):
@@ -558,7 +583,7 @@ class App():
             settings = json.load(settings_file)
         self.main_app(root, settings)
         root.deiconify()
-        self.launcher.destroy()
+        self.launcher_window.destroy()
 
 
     def reset(self):
@@ -865,7 +890,7 @@ class App():
         settings_window.destroy()
         with open(self.settings_file) as settings_file:
             settings = json.load(settings_file)
-        self.launcher_test(settings)
+        self.launcher(settings)
 
     def full_shutdown(self, launcher_window, root):
         """Destroy the launcher window and the root window
@@ -895,10 +920,16 @@ class App():
         Keyword arguments:
         value -- an int represeting the new width of the window
         """
-        width = int(value.split("x")[0])
-        height = int(value.split("x")[1])
-        self.settings["win_width"] = width
-        self.settings["win_height"] = height
+        if value == "Small":
+            dim = 500
+        elif value == "Large":
+            dim = 1000
+        elif value == "Extra Large":
+            dim = 1200
+        else:
+            dim = 700
+        self.settings["win_width"] = dim
+        self.settings["win_height"] = dim
         with open(self.settings_file, "w") as fl:
             json.dump(self.settings, fl, indent=4, sort_keys=True)
 
