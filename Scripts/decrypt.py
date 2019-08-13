@@ -111,4 +111,4 @@ def dec_manager(files, key_dir, passkey):
                 return None
         with open(sym, "wb") as sym_src:
             sym_src.write(sym_dec)
-    success()
+    success("dec")

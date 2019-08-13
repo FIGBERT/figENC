@@ -99,4 +99,4 @@ def enc_manager(target_files, save_folder):
             )
         with open(sym_src, "wb") as crypto_key_file:
             crypto_key_file.write(encrypted_key)
-    success()
+    success("enc")

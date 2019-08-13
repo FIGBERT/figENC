@@ -96,4 +96,4 @@ def just_key_manager(mode, save_folder, passkey):
         rsa_key(pub_src, priv_src, passkey)
     else:
         mixed_key(pub_src, priv_src, sym_src, passkey)
-    success()
+    success("key")
