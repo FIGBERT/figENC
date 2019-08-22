@@ -451,6 +451,9 @@ class App():
         elif self.update_bool == "updated":
             self.update_text = "Up to date!"
             self.update_color = "#B1A5B8"
+        elif self.update_bool == "dev":
+            self.update_text = "Hello FIGBERT"
+            self.update_color = "#643181"
         else:
             self.update_text = "Connection failed"
             self.update_color = "#FC142F"

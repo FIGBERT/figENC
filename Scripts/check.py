@@ -1,3 +1,5 @@
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
 import os, inspect, sys
 import prompts
 
@@ -214,7 +216,21 @@ def dec(files, pass1, pass2, key_dir):
     priv = key_dir + "/private_key.pem"
     sym = key_dir + "/symmetric_key.key"
     proper_keys = True if (rsa and os.path.exists(priv)) or (not rsa and os.path.exists(priv) and os.path.exists(sym)) else False
-    if broken_paths == "" and key_dir_access and password_match and proper_keys:
+    correct_pass = True
+    with open(priv, "rb") as priv_src:
+        try:
+            serialization.load_pem_private_key(
+                priv_src.read(),
+                password=bytes(pass1, "utf-8"),
+                backend=default_backend()
+            )
+        except ValueError:
+            correct_pass = False
+    if (
+        broken_paths == "" and key_dir_access
+        and password_match and proper_keys
+        and correct_pass
+    ):
         return True
     else:
         if broken_paths != "":
@@ -225,6 +241,8 @@ def dec(files, pass1, pass2, key_dir):
             prompts.password_error(pass1, pass2)
         if not proper_keys:
             prompts.missing_keys(key_dir)
+        if not correct_pass:
+            prompts.wrong_pass(pass1)
         return False
     
 

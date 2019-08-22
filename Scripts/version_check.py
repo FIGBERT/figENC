@@ -28,5 +28,7 @@ def update_available():
         local_version = local.read()
     if local_version < git_import:
         return "available"
+    elif local_version > git_import:
+        return "dev"
     else:
         return "updated"

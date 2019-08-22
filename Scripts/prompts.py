@@ -76,6 +76,15 @@ def missing_keys(folder):
         )
     )
 
+def wrong_pass(passkey):
+    messagebox.showwarning(
+        "Incorrect Password",
+        (
+            "The password provided is incorrect. Please try again."
+            "\n\nPassword:\n%s" % passkey
+        )
+    )
+
 def success(mode):
     """Inform the user of the processes succesful completion
     with a fun message/reference.
