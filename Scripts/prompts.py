@@ -29,6 +29,15 @@ def password_error(one, two):
         )
     )
 
+def encrypted_keys():
+    messagebox.showwarning(
+        "Keys are Password Locked",
+        (
+            "The keys provided are encrypted, and require a password to "
+            "function. Please attempt decryption again with a password."
+        )
+    )
+
 def file_access_error(broken_paths):
     """Raise an error informing the user that some files aren't
     accessible by figENC.

@@ -268,7 +268,20 @@ def weak_dec(files, key_dir):
     priv = key_dir + "/private_key.pem"
     sym = key_dir + "/symmetric_key.key"
     proper_keys = True if (rsa and os.path.exists(priv)) or (not rsa and os.path.exists(priv) and os.path.exists(sym)) else False
-    if broken_paths == "" and key_dir_access and proper_keys:
+    if proper_keys:
+        with open(priv, "rb") as priv_src:
+            try:
+                serialization.load_pem_private_key(
+                    priv_src.read(),
+                    password=None,
+                    backend=default_backend()
+                )
+                need_pass = False
+            except TypeError:
+                need_pass = True
+    else:
+        need_pass = False
+    if broken_paths == "" and key_dir_access and proper_keys and not need_pass:
         return True
     else:
         if broken_paths != "":
@@ -277,4 +290,6 @@ def weak_dec(files, key_dir):
             prompts.key_dir_error(key_dir)
         if not proper_keys:
             prompts.missing_keys(key_dir)
+        if need_pass:
+            prompts.encrypted_keys()
         return False
