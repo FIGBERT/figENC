@@ -18,15 +18,13 @@ def overwrite_prompt():
         )
     )
 
-def password_error(one, two):
+def password_error():
     """"Raise an error informing the user that the provided passwords
     do not match.
     """
     messagebox.showwarning(
         "Passwords Do Not Match",
-        ("The passwords provided do not match. Please Try again."
-        "\n\nFirst: {}\nSecond: {}".format(one, two)
-        )
+        "The passwords provided do not match. Please try again."
     )
 
 def encrypted_keys():
@@ -85,13 +83,10 @@ def missing_keys(folder):
         )
     )
 
-def wrong_pass(passkey):
+def wrong_pass():
     messagebox.showwarning(
         "Incorrect Password",
-        (
-            "The password provided is incorrect. Please try again."
-            "\n\nPassword:\n%s" % passkey
-        )
+        "The password provided is incorrect. Please try again."
     )
 
 def success(mode):

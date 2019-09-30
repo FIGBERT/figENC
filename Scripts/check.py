@@ -78,7 +78,7 @@ def key_enc(files, pass1, pass2, key_dir):
         if broken_paths != "":
             prompts.file_access_error(broken_paths)
         if not password_match:
-            prompts.password_error(pass1, pass2)
+            prompts.password_error()
         if not key_dir_access:
             prompts.key_dir_error(key_dir)
         return False
@@ -166,7 +166,7 @@ def key(key_dir, pass1, pass2):
         if not key_dir_access:
             prompts.key_dir_error(key_dir)
         if not password_match:
-            prompts.password_error(pass1, pass2)
+            prompts.password_error()
         return False
 
 
@@ -238,11 +238,11 @@ def dec(files, pass1, pass2, key_dir):
         if not key_dir_access:
             prompts.key_dir_error(key_dir)
         if not password_match:
-            prompts.password_error(pass1, pass2)
+            prompts.password_error()
         if not proper_keys:
             prompts.missing_keys(key_dir)
         if not correct_pass:
-            prompts.wrong_pass(pass1)
+            prompts.wrong_pass()
         return False
     
 
