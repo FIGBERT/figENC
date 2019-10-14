@@ -1,5 +1,5 @@
 import requests, sys
-from check import find_path
+from path import find_path
 
 def update_available():
     """Check against the current app version for
@@ -12,13 +12,13 @@ def update_available():
             git_import = requests.get(
                 ("https://raw.githubusercontent.com/therealFIGBERT/figENC/"
                 "master/Executables/figENC_MacOS/figENC.app/Contents/Resources"
-                "/version.txt"
+                "/version.txt?token=AEAWGCM6DNTALDSEJWBNUTC5UTU74"
                 )
             ).text
         else:
             git_import = requests.get(
                 ("https://raw.githubusercontent.com/therealFIGBERT/figENC/"
-                "master/Executables/figENC_Windows/version.txt"
+                "master/Executables/figENC_Windows/version.txt?token=AEAWGCM6DNTALDSEJWBNUTC5UTU74"
                 )
             ).text
     except requests.exceptions.ConnectionError:

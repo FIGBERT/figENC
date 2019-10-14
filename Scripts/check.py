@@ -1,7 +1,6 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-import os, inspect, sys
-import prompts
+import os, prompts
 
 def password_check(first_pass, second_pass):
     """Returns `True` is the two passed strings match,
@@ -15,37 +14,6 @@ def password_check(first_pass, second_pass):
         return True
     else:
         return False
-
-
-# def find_path(filename):
-#     """Return the correct filepath if you are running
-#     figENC as a bundled application
-    
-#     Keyword arguments:
-#     filename -- the filename to convert to a filepath
-#     """
-#     try:
-#         base_path = sys._MEIPASS
-#     except Exception:
-#         base_path = os.path.abspath(".")
-#     return os.path.join(base_path, filename)
-
-
-def find_path(file):
-        """Return the correct filepath if you are running
-        figENC as a script
-
-        Keyword arguments:
-        file -- the filename to convert to a filepath
-        """
-        return os.path.dirname(
-            os.path.abspath(
-                inspect.getfile(
-                    inspect.currentframe()
-                )
-            )
-        ) + "/{}".format(file)
-
 
 def key_enc(files, pass1, pass2, key_dir):
     """Return `True` if all of the conditions are valid

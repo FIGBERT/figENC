@@ -1,6 +1,7 @@
 from tkinter import messagebox
 from random import choice
-
+from json import load
+from path import find_path
 
 def overwrite_prompt():
     """Opens a tkinter messagebox asking if the user wants to
@@ -97,34 +98,8 @@ def success(mode):
         lst = "enc"
     else:
         lst = "dec"
-    fun_messages = {
-        "enc": [
-            "Proceed into cyberspace with confidence.",
-            "*applause*",
-            "Congratulations, prince of darkness.",
-            "Don't delete the .dat file",
-            "You can remove your hoodie now.",
-            "D*ck pic hidden.",
-            "Time to take over the world.",
-            "Mainframe secured.",
-            "Don't steal my nuts!",
-            "Probably a little overkill"
-        ],
-        "dec": [
-            "Proceed into cyberspace with confidence.",
-            "*applause*",
-            "Congratulations, prince of darkness.",
-            "Don't delete the .dat file",
-            "You can remove your hoodie now.",
-            "From nothing to something.",
-            "Time to take over the world.",
-            "Mainframe secured.",
-            "Don't steal my nuts!",
-            ("Like pulling a rabbit from a hat, but with lots of math,"
-            " computers, and it's actually nothing like pulling a rabbit"
-            " from a hat.")
-        ]
-    }
+    with open(find_path("cookie.json")) as cookie_file:
+        fun_messages = load(cookie_file)
     messagebox.showinfo(
         "Success",
         "The operation was complete. %s"%choice(fun_messages[lst])

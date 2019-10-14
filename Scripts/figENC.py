@@ -6,7 +6,7 @@ import key, check
 from encrypt import enc_manager
 from decrypt import dec_manager
 import version_check as vc
-from check import find_path
+from path import find_path
 
 
 class App():
