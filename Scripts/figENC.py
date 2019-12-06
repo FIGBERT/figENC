@@ -973,4 +973,5 @@ class App():
 if __name__ == "__main__":
     root = tk.Tk()
     App(root)
+    root.iconbitmap(find_path('icon-windowed.icns'))
     root.mainloop()
