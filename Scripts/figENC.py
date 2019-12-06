@@ -973,5 +973,9 @@ class App():
 if __name__ == "__main__":
     root = tk.Tk()
     App(root)
-    root.iconbitmap(find_path('icon-windowed.icns'))
+    if sys.platform == "darwin":
+        icon_path = find_path('icon-windowed.icns')
+    else:
+        icon_path = find_path('icon-windowed.ico')
+    root.iconbitmap(icon_path)
     root.mainloop()
